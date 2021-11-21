@@ -931,15 +931,15 @@
     "@types/sinon-chai" "^3.2.3"
     "@types/web3" "1.0.19"
 
-"@openzeppelin/contracts@^4.3.0":
-  version "4.3.2"
-  resolved "https://registry.npmjs.org/@openzeppelin/contracts/-/contracts-4.3.2.tgz"
-  integrity sha512-AybF1cesONZStg5kWf6ao9OlqTZuPqddvprc0ky7lrUVOjXeKpmQ2Y9FK+6ygxasb+4aic4O5pneFBfwVsRRRg==
+"@openzeppelin/contracts@4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.2.0.tgz#260d921d99356e48013d9d760caaa6cea35dc642"
+  integrity sha512-LD4NnkKpHHSMo5z9MvFsG4g1xxZUDqV3A3Futu3nvyfs4wPwXxqOgMaxOoa2PeyGL2VNeSlbxT54enbQzGcgJQ==
 
-"@paulrberg/contracts@^3.4.0":
-  version "3.5.2"
-  resolved "https://registry.npmjs.org/@paulrberg/contracts/-/contracts-3.5.2.tgz"
-  integrity sha512-f/+YqtUnr2sax/XInqNADD7jHrXwDBFr4s0CL/76LhiuB3k8r/osEicBoCTBKwEmEZhWvIAKAJqu7N4SyNVitg==
+"@paulrberg/contracts@3.4.0":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@paulrberg/contracts/-/contracts-3.4.0.tgz#ce6bb7c1b425f5a3a60258aef96e573537f9c608"
+  integrity sha512-wh9mKkEZ1nZ9T7/ymxEUHVQcunfybl3kP/u63RBrwYqASK6cB+pU+aCBvb1X2Yfde461L4LkJpC7Z3BIbFUvfA==
   dependencies:
     prb-math "^2.2.0"
 

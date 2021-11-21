@@ -1,4 +1,4 @@
-name: juice-contracts-tests
+name: juice-contracts-v1-test
 on:
   pull_request:
     branches:
@@ -49,6 +49,6 @@ jobs:
       # Give the local blockchain time to come up.
       - name: Sleep
         run: sleep 60
-      # Run V2 unit tests.
+      # Run unit tests.
       - name: Run unit tests
-        run: yarn test:unit --grep "V2"
+        run: yarn test:unit

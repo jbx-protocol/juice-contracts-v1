@@ -59,8 +59,7 @@ module.exports = {
     settings: {
       optimizer: {
         enabled: true,
-        // https://docs.soliditylang.org/en/v0.6.3/using-the-compiler.html
-        runs: 21000,
+        runs: 10000,
       },
     },
   },
