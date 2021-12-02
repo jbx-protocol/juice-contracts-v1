@@ -835,7 +835,10 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
     );
 
     // Make sure int casting isnt overflowing the int. 2^255 - 1 is the largest number that can be stored in an int.
-    require(_totalTickets + amount <= uint256(type(int256).max), 'T:: INT_LIMIT_REACHED');
+    require(
+      _totalTickets + amount <= uint256(type(int256).max),
+      'T::printReservedTickets: INT_LIMIT_REACHED'
+    );
 
     // Set the tracker to be the new total supply.
     _processedTicketTrackerOf[_projectId] = int256(_totalTickets + amount);
@@ -1009,9 +1012,6 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
     // Get a reference to the current funding cycle for the project.
     FundingCycle memory _fundingCycle = fundingCycles.currentOf(_projectId);
 
-    // console.log('j:', (_fundingCycle.metadata >> 32) & 1);
-    // console.log('j:', _fundingCycle.metadata);
-    // console.log('k:', ((_fundingCycle.metadata >> 32) & 1) == 0);
     // Make sure its not paused.
     require(((_fundingCycle.metadata >> 32) & 1) == 0, 'T::pay: PAUSED');
 
@@ -1045,7 +1045,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
           _processedTicketTrackerOf[_projectId] < 0 ||
             uint256(_processedTicketTrackerOf[_projectId]) + uint256(_weightedAmount) <=
             uint256(type(int256).max),
-          'T:: INT_LIMIT_REACHED'
+          'T::pay INT_LIMIT_REACHED'
         );
         _processedTicketTrackerOf[_projectId] =
           _processedTicketTrackerOf[_projectId] +
@@ -1159,15 +1159,21 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
     returns (uint256 packed)
   {
     // The reserved project ticket rate must be less than or equal to 200.
-    require(_metadata.reservedRate <= 200, 'T:: BAD_RESERVED_RATE');
+    require(
+      _metadata.reservedRate <= 200,
+      'T::_validateAndPackFundingCycleMetadata: BAD_RESERVED_RATE'
+    );
 
     // The bonding curve rate must be between 0 and 200.
-    require(_metadata.bondingCurveRate <= 200, 'T:: BAD_BONDING_CURVE_RATE');
+    require(
+      _metadata.bondingCurveRate <= 200,
+      'T::_validateAndPackFundingCycleMetadata: BAD_BONDING_CURVE_RATE'
+    );
 
     // The reconfiguration bonding curve rate must be less than or equal to 200.
     require(
       _metadata.reconfigurationBondingCurveRate <= 200,
-      'T:: BAD_RECONFIGURATION_BONDING_CURVE_RATE'
+      'T::_validateAndPackFundingCycleMetadata: BAD_RECONFIGURATION_BONDING_CURVE_RATE'
     );
 
     // version 0 in the first 8 bits.
