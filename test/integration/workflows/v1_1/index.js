@@ -27,6 +27,7 @@ import nonRecurring from './non_recurring';
 import challengeHandle from './challenge_handle';
 import takeFee from './take_fee';
 import proxyPaymentAddresses from './proxy_payment_addresses';
+import pausePayments from './pause_payments';
 
 export {
   deploy,
@@ -58,4 +59,5 @@ export {
   challengeHandle,
   takeFee,
   proxyPaymentAddresses,
+  pausePayments
 };

@@ -7,11 +7,13 @@ import '@openzeppelin/contracts/utils/Address.sol';
 import '@paulrberg/contracts/math/PRBMath.sol';
 import '@paulrberg/contracts/math/PRBMathUD60x18.sol';
 
-import './interfaces/ITerminalV1.sol';
+import './interfaces/ITerminalV1_1.sol';
 import './abstract/JuiceboxProject.sol';
 import './abstract/Operatable.sol';
 
 import './libraries/Operations.sol';
+
+import 'hardhat/console.sol';
 
 /**
   ─────────────────────────────────────────────────────────────────────────────────────────────────
@@ -34,7 +36,7 @@ import './libraries/Operations.sol';
   @dev 
   A project can transfer its funds, along with the power to reconfigure and mint/burn their Tickets, from this contract to another allowed terminal contract at any time.
 */
-contract TerminalV1_1 is Operatable, ITerminalV1, ITerminal, ReentrancyGuard {
+contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
   // Modifier to only allow governance to call the function.
   modifier onlyGov() {
     require(msg.sender == governance, 'TerminalV1_1: UNAUTHORIZED');
@@ -300,7 +302,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1, ITerminal, ReentrancyGuard {
     bytes32 _handle,
     string calldata _uri,
     FundingCycleProperties calldata _properties,
-    FundingCycleMetadata calldata _metadata,
+    FundingCycleMetadata2 calldata _metadata,
     PayoutMod[] memory _payoutMods,
     TicketMod[] memory _ticketMods
   ) external override {
@@ -360,7 +362,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1, ITerminal, ReentrancyGuard {
   function configure(
     uint256 _projectId,
     FundingCycleProperties calldata _properties,
-    FundingCycleMetadata calldata _metadata,
+    FundingCycleMetadata2 calldata _metadata,
     PayoutMod[] memory _payoutMods,
     TicketMod[] memory _ticketMods
   )
@@ -833,10 +835,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1, ITerminal, ReentrancyGuard {
     );
 
     // Make sure int casting isnt overflowing the int. 2^255 - 1 is the largest number that can be stored in an int.
-    require(
-      _totalTickets + amount <= uint256(type(int256).max),
-      'T::printReservedTickets: INT_LIMIT_REACHED'
-    );
+    require(_totalTickets + amount <= uint256(type(int256).max), 'T:: INT_LIMIT_REACHED');
 
     // Set the tracker to be the new total supply.
     _processedTicketTrackerOf[_projectId] = int256(_totalTickets + amount);
@@ -1010,6 +1009,12 @@ contract TerminalV1_1 is Operatable, ITerminalV1, ITerminal, ReentrancyGuard {
     // Get a reference to the current funding cycle for the project.
     FundingCycle memory _fundingCycle = fundingCycles.currentOf(_projectId);
 
+    // console.log('j:', (_fundingCycle.metadata >> 32) & 1);
+    // console.log('j:', _fundingCycle.metadata);
+    // console.log('k:', ((_fundingCycle.metadata >> 32) & 1) == 0);
+    // Make sure its not paused.
+    require(((_fundingCycle.metadata >> 32) & 1) == 0, 'T::pay: PAUSED');
+
     // Use the funding cycle's weight if it exists. Otherwise use the base weight.
     uint256 _weight = _fundingCycle.number == 0
       ? fundingCycles.BASE_WEIGHT()
@@ -1040,7 +1045,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1, ITerminal, ReentrancyGuard {
           _processedTicketTrackerOf[_projectId] < 0 ||
             uint256(_processedTicketTrackerOf[_projectId]) + uint256(_weightedAmount) <=
             uint256(type(int256).max),
-          'T::printTickets: INT_LIMIT_REACHED'
+          'T:: INT_LIMIT_REACHED'
         );
         _processedTicketTrackerOf[_projectId] =
           _processedTicketTrackerOf[_projectId] +
@@ -1148,37 +1153,33 @@ contract TerminalV1_1 is Operatable, ITerminalV1, ITerminal, ReentrancyGuard {
 
       @return packed The packed uint256 of all metadata params. The first 8 bytes specify the version.
      */
-  function _validateAndPackFundingCycleMetadata(FundingCycleMetadata memory _metadata)
+  function _validateAndPackFundingCycleMetadata(FundingCycleMetadata2 memory _metadata)
     private
     pure
     returns (uint256 packed)
   {
     // The reserved project ticket rate must be less than or equal to 200.
-    require(
-      _metadata.reservedRate <= 200,
-      'T::_validateAndPackFundingCycleMetadata: BAD_RESERVED_RATE'
-    );
+    require(_metadata.reservedRate <= 200, 'T:: BAD_RESERVED_RATE');
 
     // The bonding curve rate must be between 0 and 200.
-    require(
-      _metadata.bondingCurveRate <= 200,
-      'T::_validateAndPackFundingCycleMetadata: BAD_BONDING_CURVE_RATE'
-    );
+    require(_metadata.bondingCurveRate <= 200, 'T:: BAD_BONDING_CURVE_RATE');
 
     // The reconfiguration bonding curve rate must be less than or equal to 200.
     require(
       _metadata.reconfigurationBondingCurveRate <= 200,
-      'T::_validateAndPackFundingCycleMetadata: BAD_RECONFIGURATION_BONDING_CURVE_RATE'
+      'T:: BAD_RECONFIGURATION_BONDING_CURVE_RATE'
     );
 
-    // version 0 in the first 8 bytes.
+    // version 0 in the first 8 bits.
     packed = 0;
-    // reserved rate in bytes 8-15.
+    // reserved rate in bits 8-15.
     packed |= _metadata.reservedRate << 8;
-    // bonding curve in bytes 16-23.
+    // bonding curve in bits 16-23.
     packed |= _metadata.bondingCurveRate << 16;
-    // reconfiguration bonding curve rate in bytes 24-31.
+    // reconfiguration bonding curve rate in bits 24-31.
     packed |= _metadata.reconfigurationBondingCurveRate << 24;
+    // pay paused rate in bit 32.
+    if (_metadata.payIsPaused) packed |= 1 << 32;
   }
 
   /** 

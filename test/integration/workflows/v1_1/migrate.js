@@ -137,7 +137,6 @@ export default [
       // Get the initial balance of the jucier.
       const initialTerminalV1_1Balance = await getBalanceFn(contracts.terminalV1_1.address);
 
-      console.log({ initialTerminalV1_1Balance });
       await executeFn({
         caller: payer,
         contract: contracts.terminalV1_1,
@@ -327,17 +326,13 @@ export default [
       contracts,
       verifyBalanceFn,
       local: { amountToTap1, initialTerminalV1_1Balance },
-    }) => {
-
-      console.log({ initialTerminalV1_1Balance, amountToTap1 })
-
-      await verifyBalanceFn({
+    }) =>
+      verifyBalanceFn({
         address: contracts.terminalV1_1.address,
         expect: initialTerminalV1_1Balance
         // // The fee went to the TerminalV1 so no need to subtract it.
         // .add(amountToTap1)
-      });
-    },
+      })
   },
   {
     description: 'The rest of the balance should be entirely in the new TerminalV1_1',

@@ -11,13 +11,14 @@ import './IModStore.sol';
 import './ITerminal.sol';
 import './IOperatorStore.sol';
 
-struct FundingCycleMetadata {
+struct FundingCycleMetadata2 {
   uint256 reservedRate;
   uint256 bondingCurveRate;
   uint256 reconfigurationBondingCurveRate;
+  bool payIsPaused;
 }
 
-interface ITerminalV1 {
+interface ITerminalV1_1 {
   event Configure(uint256 indexed fundingCycleId, uint256 indexed projectId, address caller);
 
   event Tap(
@@ -124,7 +125,7 @@ interface ITerminalV1 {
     bytes32 _handle,
     string calldata _uri,
     FundingCycleProperties calldata _properties,
-    FundingCycleMetadata calldata _metadata,
+    FundingCycleMetadata2 calldata _metadata,
     PayoutMod[] memory _payoutMods,
     TicketMod[] memory _ticketMods
   ) external;
@@ -132,7 +133,7 @@ interface ITerminalV1 {
   function configure(
     uint256 _projectId,
     FundingCycleProperties calldata _properties,
-    FundingCycleMetadata calldata _metadata,
+    FundingCycleMetadata2 calldata _metadata,
     PayoutMod[] memory _payoutMods,
     TicketMod[] memory _ticketMods
   ) external returns (uint256);

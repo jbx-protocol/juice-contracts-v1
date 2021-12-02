@@ -36,6 +36,13 @@ const tests = {
       }),
     },
     {
+      description: 'paused',
+      fn: () => ({
+        paused: true,
+        revert: 'T::pay: PAUSED',
+      }),
+    },
+    {
       description: 'zero address beneficiary',
       fn: () => ({
         beneficiary: constants.AddressZero,
@@ -96,6 +103,7 @@ const ops =
         beneficiary = deployer.address,
         memo = 'some-memo',
         preferUnstaked = false,
+        paused = false,
         amount = BigNumber.from(10).pow(18).mul(42),
         weight = BigNumber.from(10).pow(18).mul(10),
         unreservedWeightedAmount = BigNumber.from(10).pow(18).mul(399),
@@ -108,8 +116,12 @@ const ops =
         ...custom,
       };
 
+      console.log({ paused });
+
       // Create a packed metadata value to store the reserved rate.
       let packedMetadata = BigNumber.from(0);
+      packedMetadata = packedMetadata.add(paused ? 1 : 0);
+      packedMetadata = packedMetadata.shl(8);
       packedMetadata = packedMetadata.add(42);
       packedMetadata = packedMetadata.shl(8);
       packedMetadata = packedMetadata.add(42);
@@ -117,9 +129,10 @@ const ops =
       packedMetadata = packedMetadata.add(reservedRate);
       packedMetadata = packedMetadata.shl(8);
 
+      console.log({ packedMetadata });
+
       return [
         mockFn({
-          condition: !revert,
           mockContract: mockContracts.fundingCycles,
           fn: 'currentOf',
           args: [projectId],
