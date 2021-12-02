@@ -66,7 +66,7 @@ const tests = {
         metadata: {
           reservedRate: 201,
         },
-        revert: 'TerminalV1dot1::_validateAndPackFundingCycleMetadata: BAD_RESERVED_RATE',
+        revert: 'T::_validateAndPackFundingCycleMetadata: BAD_RESERVED_RATE',
       }),
     },
     {
@@ -75,7 +75,7 @@ const tests = {
         metadata: {
           bondingCurveRate: 201,
         },
-        revert: 'TerminalV1dot1::_validateAndPackFundingCycleMetadata: BAD_BONDING_CURVE_RATE',
+        revert: 'T::_validateAndPackFundingCycleMetadata: BAD_BONDING_CURVE_RATE',
       }),
     },
     {
@@ -85,7 +85,7 @@ const tests = {
           reconfigurationBondingCurveRate: 201,
         },
         revert:
-          'TerminalV1dot1::_validateAndPackFundingCycleMetadata: BAD_RECONFIGURATION_BONDING_CURVE_RATE',
+          'T::_validateAndPackFundingCycleMetadata: BAD_RECONFIGURATION_BONDING_CURVE_RATE',
       }),
     },
   ],

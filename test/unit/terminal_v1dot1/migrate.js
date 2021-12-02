@@ -14,7 +14,7 @@ const tests = {
         projectOwner: deployer.address,
         governance,
         projectId: 1,
-        terminal: await deployMockLocalContractFn('TerminalV1', [
+        terminal: await deployMockLocalContractFn('TerminalV1dot1', [
           mockContracts.projects.address,
           mockContracts.fundingCycles.address,
           mockContracts.ticketBooth.address,
@@ -34,7 +34,7 @@ const tests = {
         projectOwner: deployer.address,
         governance,
         projectId: 1,
-        terminal: await deployMockLocalContractFn('TerminalV1', [
+        terminal: await deployMockLocalContractFn('TerminalV1dot1', [
           mockContracts.projects.address,
           mockContracts.fundingCycles.address,
           mockContracts.ticketBooth.address,
@@ -56,7 +56,7 @@ const tests = {
         projectOwner: deployer.address,
         governance,
         projectId: 1,
-        terminal: await deployMockLocalContractFn('TerminalV1', [
+        terminal: await deployMockLocalContractFn('TerminalV1dot1', [
           mockContracts.projects.address,
           mockContracts.fundingCycles.address,
           mockContracts.ticketBooth.address,
@@ -78,7 +78,7 @@ const tests = {
         projectOwner: addrs[0].address,
         governance,
         projectId: 1,
-        terminal: await deployMockLocalContractFn('TerminalV1', [
+        terminal: await deployMockLocalContractFn('TerminalV1dot1', [
           mockContracts.projects.address,
           mockContracts.fundingCycles.address,
           mockContracts.ticketBooth.address,
@@ -110,7 +110,7 @@ const tests = {
           projectOwner: addrs[0].address,
           governance,
           projectId: 1,
-          terminal: await deployMockLocalContractFn('TerminalV1', [
+          terminal: await deployMockLocalContractFn('TerminalV1dot1', [
             mockContracts.projects.address,
             mockContracts.fundingCycles.address,
             mockContracts.ticketBooth.address,
@@ -136,7 +136,7 @@ const tests = {
           projectOwner: deployer.address,
           governance,
           projectId: 1,
-          terminal: await deployMockLocalContractFn('TerminalV1', [
+          terminal: await deployMockLocalContractFn('TerminalV1dot1', [
             mockContracts.projects.address,
             mockContracts.fundingCycles.address,
             mockContracts.ticketBooth.address,
@@ -148,7 +148,7 @@ const tests = {
           ]),
           setup: {
             allowMigration: false,
-            currentTerminal: await deployMockLocalContractFn('TerminalV1', [
+            currentTerminal: await deployMockLocalContractFn('TerminalV1dot1', [
               mockContracts.projects.address,
               mockContracts.fundingCycles.address,
               mockContracts.ticketBooth.address,
@@ -159,7 +159,7 @@ const tests = {
               governance.address,
             ]),
           },
-          revert: 'TerminalV1dot1::migrate: UNAUTHORIZED',
+          revert: 'T::migrate: UNAUTHORIZED',
         };
       },
     },
@@ -177,7 +177,7 @@ const tests = {
           projectOwner: deployer.address,
           governance,
           projectId: 1,
-          terminal: await deployMockLocalContractFn('TerminalV1', [
+          terminal: await deployMockLocalContractFn('TerminalV1dot1', [
             mockContracts.projects.address,
             mockContracts.fundingCycles.address,
             mockContracts.ticketBooth.address,
@@ -191,7 +191,7 @@ const tests = {
             allowMigration: false,
             currentTerminal: targetContract,
           },
-          revert: 'TerminalV1dot1::migrate: NOT_ALLOWED',
+          revert: 'T::migrate: NOT_ALLOWED',
         };
       },
     },
@@ -232,15 +232,6 @@ export default function () {
           returns: [unprintedReservedTicketAmount],
         });
 
-        // Add to balance if needed.
-        if (addToBalance) {
-          await this.targetContract.addToBalance(projectId, {
-            value: addToBalance,
-          });
-          // Mock the ability to add a balance to the terminal.
-          await terminal.mock.addToBalance.withArgs(projectId).returns();
-        }
-
         // Mock the terminal directory setting process.
         await this.mockContracts.terminalDirectory.mock.setTerminal
           .withArgs(projectId, terminal.address)
@@ -248,6 +239,18 @@ export default function () {
         await this.mockContracts.terminalDirectory.mock.terminalOf
           .withArgs(projectId)
           .returns(this.targetContract.address);
+
+        // Add to balance if needed.
+        if (addToBalance) {
+          await this.mockContracts.ticketBooth.mock.totalSupplyOf
+            .withArgs(projectId)
+            .returns(0);
+          await this.targetContract.addToBalance(projectId, {
+            value: addToBalance,
+          });
+          // Mock the ability to add a balance to the terminal.
+          await terminal.mock.addToBalance.withArgs(projectId).returns();
+        }
 
         // Set the project owner.
         await this.mockContracts.projects.mock.ownerOf.withArgs(projectId).returns(projectOwner);

@@ -45,7 +45,7 @@ const tests = {
       description: 'with tickets',
       fn: () => ({
         weightedPrePrintAmount: BigNumber.from(42),
-        revert: 'TerminalV1dot1::printTickets: ALREADY_ACTIVE',
+        revert: 'T::printTickets: ALREADY_ACTIVE',
       }),
     },
   ],

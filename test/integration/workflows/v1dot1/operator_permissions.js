@@ -30,7 +30,7 @@ const operations = [
       ],
       domain: expectedProjectId,
       permissionIndex: 1,
-      authorizedRevert: 'TerminalV1dot1::_validateAndPackFundingCycleMetadata: BAD_RESERVED_RATE',
+      authorizedRevert: 'T::_validateAndPackFundingCycleMetadata: BAD_RESERVED_RATE',
     }),
   },
   {
@@ -47,7 +47,7 @@ const operations = [
       ],
       domain: expectedProjectId,
       permissionIndex: 2,
-      authorizedRevert: 'TerminalV1dot1::printTickets: ZERO_ADDRESS',
+      authorizedRevert: 'T::printTickets: ZERO_ADDRESS',
     }),
   },
   {
@@ -64,7 +64,7 @@ const operations = [
       ],
       domain: expectedProjectId,
       permissionIndex: 3,
-      authorizedRevert: 'TerminalV1dot1::redeem: ZERO_ADDRESS',
+      authorizedRevert: 'T::redeem: ZERO_ADDRESS',
     }),
   },
   {
@@ -74,7 +74,7 @@ const operations = [
       args: [expectedProjectId, constants.AddressZero],
       domain: expectedProjectId,
       permissionIndex: 4,
-      authorizedRevert: 'TerminalV1dot1::migrate: NOT_ALLOWED',
+      authorizedRevert: 'T::migrate: NOT_ALLOWED',
     }),
   },
   {

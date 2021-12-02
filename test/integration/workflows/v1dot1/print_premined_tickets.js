@@ -546,7 +546,7 @@ export default [
           randomStringFn(),
           randomBoolFn(),
         ],
-        revert: 'TerminalV1dot1::printTickets: ALREADY_ACTIVE',
+        revert: 'T::printTickets: ALREADY_ACTIVE',
       }),
   },
 ];

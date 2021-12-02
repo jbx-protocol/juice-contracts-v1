@@ -260,7 +260,7 @@ export default [
         contract: contracts.terminalV1dot1,
         fn: 'migrate',
         args: [expectedProjectId, secondTerminalV1dot1.address],
-        revert: 'TerminalV1dot1::migrate: NOT_ALLOWED',
+        revert: 'T::migrate: NOT_ALLOWED',
       });
 
       return { secondTerminalV1dot1 };
@@ -450,7 +450,7 @@ export default [
         randomAddressFn(),
         randomBoolFn(),
         ],
-        revert: reservedRate.eq(0) && 'TerminalV1dot1::redeem: NO_OP',
+        revert: reservedRate.eq(0) && 'T::redeem: NO_OP',
       }),
   },
   {

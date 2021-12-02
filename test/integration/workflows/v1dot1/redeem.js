@@ -1071,7 +1071,7 @@ export default [
           redeemBeneficiary4,
           randomBoolFn(),
         ],
-        revert: expectNoOp && 'TerminalV1dot1::redeem: NO_OP',
+        revert: expectNoOp && 'T::redeem: NO_OP',
       });
 
       // If the requested reverted with no op, the tickets wont be redeemed.

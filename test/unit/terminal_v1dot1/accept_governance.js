@@ -15,7 +15,7 @@ const tests = {
       description: 'unauthorized',
       fn: ({ governance }) => ({
         caller: governance,
-        revert: 'TerminalV1dot1::acceptGovernance: UNAUTHORIZED',
+        revert: 'T::acceptGovernance: UNAUTHORIZED',
       }),
     },
   ],

@@ -28,7 +28,7 @@ const tests = {
       fn: ({ governance }) => ({
         caller: governance,
         governance: constants.AddressZero,
-        revert: 'TerminalV1dot1::appointGovernance: ZERO_ADDRESS',
+        revert: 'T::appointGovernance: ZERO_ADDRESS',
       }),
     },
     {
@@ -36,7 +36,7 @@ const tests = {
       fn: ({ governance }) => ({
         caller: governance,
         governance: governance.address,
-        revert: 'TerminalV1dot1::appointGovernance: NO_OP',
+        revert: 'T::appointGovernance: NO_OP',
       }),
     },
   ],

@@ -29,7 +29,7 @@ const tests = {
       fn: ({ governance }) => ({
         caller: governance,
         fee: BigNumber.from(201),
-        revert: 'TerminalV1dot1::setFee: BAD_FEE',
+        revert: 'T::setFee: BAD_FEE',
       }),
     },
   ],

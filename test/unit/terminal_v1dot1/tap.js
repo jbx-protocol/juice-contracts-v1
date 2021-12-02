@@ -154,7 +154,7 @@ const tests = {
       description: 'unexpected currency',
       fn: () => ({
         currency: 19,
-        revert: 'TerminalV1dot1::tap: UNEXPECTED_CURRENCY',
+        revert: 'T::tap: UNEXPECTED_CURRENCY',
       }),
     },
     {
@@ -163,7 +163,7 @@ const tests = {
         addToBalance: BigNumber.from(10).pow(18).mul(1),
         ethPrice: BigNumber.from(10).pow(18).mul(1),
         amount: BigNumber.from(10).pow(18).mul(1).add(1),
-        revert: 'TerminalV1dot1::tap: INSUFFICIENT_FUNDS',
+        revert: 'T::tap: INSUFFICIENT_FUNDS',
       }),
     },
     {
@@ -172,7 +172,7 @@ const tests = {
         amount: BigNumber.from(10).pow(18).mul(1),
         ethPrice: BigNumber.from(10).pow(18).mul(1),
         minReturnedWei: BigNumber.from(10).pow(18).mul(1).add(1),
-        revert: 'TerminalV1dot1::tap: INADEQUATE',
+        revert: 'T::tap: INADEQUATE',
       }),
     },
     {
@@ -187,7 +187,7 @@ const tests = {
           lockedUntil: 0,
           terminal: { address: constants.AddressZero },
         },
-        revert: 'TerminalV1dot1::tap: BAD_MOD',
+        revert: 'T::tap: BAD_MOD',
       }),
     },
   ],
@@ -337,7 +337,20 @@ const ops =
           args: [currency],
           returns: [ethPrice],
         }),
-        ...(addToBalance > 0 ? [] : []),
+        mockFn({
+          condition: addToBalance > 0,
+          mockContract: mockContracts.terminalDirectory,
+          fn: 'terminalOf',
+          args: [projectId],
+          returns: [targetContract.address],
+        }),
+        mockFn({
+          condition: addToBalance > 0,
+          mockContract: mockContracts.ticketBooth,
+          fn: 'totalSupplyOf',
+          args: [projectId],
+          returns: [0],
+        }),
         executeFn({
           condition: addToBalance > 0,
           caller,

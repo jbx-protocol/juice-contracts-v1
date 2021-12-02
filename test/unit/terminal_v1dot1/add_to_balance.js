@@ -4,6 +4,7 @@ const {
 } = hardhat;
 
 import { expect } from 'chai';
+import { constants } from 'ethers';
 
 const tests = {
   success: [
@@ -13,6 +14,19 @@ const tests = {
         caller: deployer,
         projectId: 1,
         amount: BigNumber.from(1),
+        isTerminalOf: true,
+        expectation: {
+          projectBalance: BigNumber.from(1),
+        },
+      }),
+    },
+    {
+      description: 'add with no preset balance not being the terminal of the project',
+      fn: ({ deployer }) => ({
+        caller: deployer,
+        projectId: 1,
+        amount: BigNumber.from(1),
+        isTerminalOf: false,
         expectation: {
           projectBalance: BigNumber.from(1),
         },
@@ -24,6 +38,7 @@ const tests = {
         caller: deployer,
         projectId: 1,
         amount: BigNumber.from(1),
+        isTerminalOf: true,
         setup: {
           addToBalance: BigNumber.from(1),
         },
@@ -40,7 +55,7 @@ const tests = {
         caller: deployer,
         projectId: 1,
         amount: BigNumber.from(0),
-        revert: 'TerminalV1dot1::addToBalance: BAD_AMOUNT',
+        revert: 'T::addToBalance: BAD_AMOUNT',
       }),
     },
   ],
@@ -54,14 +69,20 @@ export default function () {
           caller,
           projectId,
           amount,
+          isTerminalOf,
           setup: { addToBalance } = {},
           expectation: { projectBalance, totalBalanceWithoutYield } = {},
         } = await successTest.fn(this);
+
+        await this.mockContracts.terminalDirectory.mock.terminalOf.withArgs(projectId).returns(isTerminalOf ? this.targetContract.address : constants.AddressZero);
+        await this.mockContracts.ticketBooth.mock.totalSupplyOf.withArgs(projectId).returns(0);
+
         if (addToBalance) {
           await this.targetContract
             .connect(caller)
             .addToBalance(projectId, { value: addToBalance });
         }
+
 
         // Execute the transaction.
         const tx = await this.targetContract

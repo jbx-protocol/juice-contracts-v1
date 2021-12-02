@@ -32,14 +32,14 @@ const tests = {
       description: 'paid zero',
       fn: () => ({
         amount: BigNumber.from(0),
-        revert: 'TerminalV1dot1::pay: BAD_AMOUNT',
+        revert: 'T::pay: BAD_AMOUNT',
       }),
     },
     {
       description: 'zero address beneficiary',
       fn: () => ({
         beneficiary: constants.AddressZero,
-        revert: 'TerminalV1dot1::pay: ZERO_ADDRESS',
+        revert: 'T::pay: ZERO_ADDRESS',
       }),
     },
   ],
@@ -154,6 +154,20 @@ const ops =
             }),
           ]
           : []),
+        mockFn({
+          condition: !revert && addToBalance > 0,
+          mockContract: mockContracts.terminalDirectory,
+          fn: 'terminalOf',
+          args: [projectId],
+          returns: [targetContract.address],
+        }),
+        mockFn({
+          condition: !revert && addToBalance > 0,
+          mockContract: mockContracts.ticketBooth,
+          fn: 'totalSupplyOf',
+          args: [projectId],
+          returns: [0],
+        }),
         executeFn({
           condition: !revert && addToBalance > 0,
           caller,

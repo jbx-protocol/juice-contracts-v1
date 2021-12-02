@@ -87,7 +87,7 @@ const tests = {
       description: 'overflow',
       fn: () => ({
         totalTickets: BigNumber.from(2).pow(255),
-        revert: 'TerminalV1dot1::printReservedTickets: INT_LIMIT_REACHED',
+        revert: 'T::printReservedTickets: INT_LIMIT_REACHED',
       }),
     },
   ],

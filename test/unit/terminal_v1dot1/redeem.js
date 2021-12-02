@@ -181,14 +181,14 @@ const tests = {
       description: 'zero count',
       fn: () => ({
         count: BigNumber.from(0),
-        revert: 'TerminalV1dot1::redeem: NO_OP',
+        revert: 'T::redeem: NO_OP',
       }),
     },
     {
       description: 'zero address',
       fn: () => ({
         beneficiary: constants.AddressZero,
-        revert: 'TerminalV1dot1::redeem: ZERO_ADDRESS',
+        revert: 'T::redeem: ZERO_ADDRESS',
       }),
     },
     {
@@ -196,7 +196,7 @@ const tests = {
       fn: () => ({
         count: BigNumber.from(2),
         ticketBalance: BigNumber.from(1),
-        revert: 'TerminalV1dot1::claimableOverflow: INSUFFICIENT_TICKETS',
+        revert: 'T::claimableOverflow: INSUFFICIENT_TICKETS',
       }),
     },
     {
@@ -207,7 +207,7 @@ const tests = {
         ethPrice: BigNumber.from(10).pow(18).mul(2),
         addToBalance: BigNumber.from(10).pow(18).mul(100),
         minReturnedWei: BigNumber.from(10).pow(18).mul(50).add(1),
-        revert: 'TerminalV1dot1::redeem: INADEQUATE',
+        revert: 'T::redeem: INADEQUATE',
       }),
     },
   ],
@@ -353,6 +353,20 @@ const ops =
           fn: 'getETHPriceFor',
           args: [currency],
           returns: [ethPrice],
+        }),
+        mockFn({
+          condition: addToBalance > 0,
+          mockContract: mockContracts.terminalDirectory,
+          fn: 'terminalOf',
+          args: [projectId],
+          returns: [targetContract.address],
+        }),
+        mockFn({
+          condition: addToBalance > 0,
+          mockContract: mockContracts.ticketBooth,
+          fn: 'totalSupplyOf',
+          args: [projectId],
+          returns: [0],
         }),
         executeFn({
           condition: addToBalance > 0,
