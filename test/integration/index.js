@@ -31,35 +31,35 @@ import {
 } from './workflows/v1';
 
 import {
-  projects as _projects_v1dot1,
-  challengeHandle as _challengeHandle_v1dot1,
-  deploy as _deploy_v1dot1,
-  ticketLockingAndTransfers as _ticketLockingAndTransfers_v1dot1,
-  redeem as _redeem_v1dot1,
-  printReservedTickets as _printReservedTickets_v1dot1,
-  printPreminedTickets as _printPreminedTickets_v1dot1,
-  issueTickets as _issueTickets_v1dot1,
-  tap as _tap_v1dot1,
-  takeFee as _takeFee_v1dot1,
-  reconfigure as _reconfigure_v1dot1,
-  limit as _limit_v1dot1,
-  zeroDuration as _zeroDuration_v1dot1,
-  nonRecurring as _nonRecurring_v1dot1,
-  approvedBallot as _approvedBallot_v1dot1,
-  failedBallot as _failedBallot_v1dot1,
-  iteratedFailedBallot as _iteratedFailedBallot_v1dot1,
-  migrate as _migrate_v1dot1,
-  operatorPermissions as _operatorPermissions_v1dot1,
-  setPayoutMods as _setPayoutMods_v1dot1,
-  setTicketMods as _setTicketMods_v1dot1,
-  governance as _governance_v1dot1,
-  setFee as _setFee_v1dot1,
-  currencyConversion as _currencyConversion_v1dot1,
-  transferProjectOwnership as _transferProjectOwnership_v1dot1,
-  directPaymentAddresses as _directPaymentAddresses_v1dot1,
-  setTerminal as _setTerminal_v1dot1,
-  proxyPaymentAddresses as _proxyPaymentAddresses_v1dot1,
-} from './workflows/v1dot1';
+  projects as _projects_v1_1,
+  challengeHandle as _challengeHandle_v1_1,
+  deploy as _deploy_v1_1,
+  ticketLockingAndTransfers as _ticketLockingAndTransfers_v1_1,
+  redeem as _redeem_v1_1,
+  printReservedTickets as _printReservedTickets_v1_1,
+  printPreminedTickets as _printPreminedTickets_v1_1,
+  issueTickets as _issueTickets_v1_1,
+  tap as _tap_v1_1,
+  takeFee as _takeFee_v1_1,
+  reconfigure as _reconfigure_v1_1,
+  limit as _limit_v1_1,
+  zeroDuration as _zeroDuration_v1_1,
+  nonRecurring as _nonRecurring_v1_1,
+  approvedBallot as _approvedBallot_v1_1,
+  failedBallot as _failedBallot_v1_1,
+  iteratedFailedBallot as _iteratedFailedBallot_v1_1,
+  migrate as _migrate_v1_1,
+  operatorPermissions as _operatorPermissions_v1_1,
+  setPayoutMods as _setPayoutMods_v1_1,
+  setTicketMods as _setTicketMods_v1_1,
+  governance as _governance_v1_1,
+  setFee as _setFee_v1_1,
+  currencyConversion as _currencyConversion_v1_1,
+  transferProjectOwnership as _transferProjectOwnership_v1_1,
+  directPaymentAddresses as _directPaymentAddresses_v1_1,
+  setTerminal as _setTerminal_v1_1,
+  proxyPaymentAddresses as _proxyPaymentAddresses_v1_1,
+} from './workflows/v1_1';
 
 // The first project ID is used for governance.
 let projectId = BigNumber.from(1);
@@ -120,7 +120,7 @@ export default function () {
       governance.address,
     ]);
 
-    const terminalV1dot1 = await this.deployContractFn('TerminalV1dot1', [
+    const terminalV1_1 = await this.deployContractFn('TerminalV1_1', [
       projects.address,
       fundingCycles.address,
       ticketBooth.address,
@@ -179,7 +179,7 @@ export default function () {
       projects,
       modStore,
       terminalV1,
-      terminalV1dot1,
+      terminalV1_1,
       proxyPaymentAddressManager,
     };
 
@@ -296,58 +296,58 @@ export default function () {
   for (let i = 0; i < 2; i += 1) {
     describe(
       'Projects can be created, have their URIs changed, transfer/claim handles, and be attached to funding cycles',
-      run(_projects_v1dot1),
+      run(_projects_v1_1),
     );
     describe(
       "Projects can have their handle's challenged, and claimed if not renewed in time",
-      run(_challengeHandle_v1dot1),
+      run(_challengeHandle_v1_1),
     );
-    describe('Deployment of a project with funding cycles and mods included', run(_deploy_v1dot1));
+    describe('Deployment of a project with funding cycles and mods included', run(_deploy_v1_1));
     describe(
       'Ticket holders can lock their tickets, which prevents them from being redeemed, unstaked, or transfered',
-      run(_ticketLockingAndTransfers_v1dot1),
+      run(_ticketLockingAndTransfers_v1_1),
     );
-    describe('Redeem tickets for overflow', run(_redeem_v1dot1));
-    describe('Prints reserved tickets', run(_printReservedTickets_v1dot1));
+    describe('Redeem tickets for overflow', run(_redeem_v1_1));
+    describe('Prints reserved tickets', run(_printReservedTickets_v1_1));
     describe(
       'Projects can print premined tickets before a payment has been made to it',
-      run(_printPreminedTickets_v1dot1),
+      run(_printPreminedTickets_v1_1),
     );
-    describe('Issues tickets and honors preference', run(_issueTickets_v1dot1));
-    describe('Tap funds up to the configured target', run(_tap_v1dot1));
+    describe('Issues tickets and honors preference', run(_issueTickets_v1_1));
+    describe('Tap funds up to the configured target', run(_tap_v1_1));
     describe(
       "A fee should be taken into governance's project when a project taps funds",
-      run(_takeFee_v1dot1),
+      run(_takeFee_v1_1),
     );
-    describe('Reconfigures a project', run(_reconfigure_v1dot1));
-    describe('A funding cycle configuration can have a limit', run(_limit_v1dot1));
-    describe('A funding cycle configuration can have a duration of 0', run(_zeroDuration_v1dot1));
-    describe('A funding cycle configuration can be non recurring', run(_nonRecurring_v1dot1));
-    describe('Ballot must be approved for reconfiguration to become active', run(_approvedBallot_v1dot1));
-    describe('Reconfiguration that fails a ballot should be ignored', run(_failedBallot_v1dot1));
+    describe('Reconfigures a project', run(_reconfigure_v1_1));
+    describe('A funding cycle configuration can have a limit', run(_limit_v1_1));
+    describe('A funding cycle configuration can have a duration of 0', run(_zeroDuration_v1_1));
+    describe('A funding cycle configuration can be non recurring', run(_nonRecurring_v1_1));
+    describe('Ballot must be approved for reconfiguration to become active', run(_approvedBallot_v1_1));
+    describe('Reconfiguration that fails a ballot should be ignored', run(_failedBallot_v1_1));
     describe(
       'Reconfiguration proposed after a failed configuration should obide by the ballot duration',
-      run(_iteratedFailedBallot_v1dot1),
+      run(_iteratedFailedBallot_v1_1),
     );
-    describe('Migrate from one Terminal to another', run(_migrate_v1dot1));
-    describe('Operators can be given permissions', run(_operatorPermissions_v1dot1));
-    describe('Set and update payout mods, honoring locked status', run(_setPayoutMods_v1dot1));
-    describe('Set and update ticket mods, honoring locked status', run(_setTicketMods_v1dot1));
-    describe('A new governance can be appointed and accepted', run(_governance_v1dot1));
-    describe('Governance can set a new fee for future configurations', run(_setFee_v1dot1));
-    describe('Currencies rates are converted to/from correctly', run(_currencyConversion_v1dot1));
-    describe('Transfer ownership over a project', run(_transferProjectOwnership_v1dot1));
+    describe('Migrate from one Terminal to another', run(_migrate_v1_1));
+    describe('Operators can be given permissions', run(_operatorPermissions_v1_1));
+    describe('Set and update payout mods, honoring locked status', run(_setPayoutMods_v1_1));
+    describe('Set and update ticket mods, honoring locked status', run(_setTicketMods_v1_1));
+    describe('A new governance can be appointed and accepted', run(_governance_v1_1));
+    describe('Governance can set a new fee for future configurations', run(_setFee_v1_1));
+    describe('Currencies rates are converted to/from correctly', run(_currencyConversion_v1_1));
+    describe('Transfer ownership over a project', run(_transferProjectOwnership_v1_1));
     describe(
       'Direct payment addresses can be deployed to add an fundable address to a project',
-      run(_directPaymentAddresses_v1dot1),
+      run(_directPaymentAddresses_v1_1),
     );
     describe(
       'A project can be created without a payment terminal, and can set one after',
-      run(_setTerminal_v1dot1),
+      run(_setTerminal_v1_1),
     );
     describe(
       'Proxy payment addresses can be deployed to add an fundable address to a project',
-      run(_proxyPaymentAddresses_v1dot1),
+      run(_proxyPaymentAddresses_v1_1),
     );
   }
 }
