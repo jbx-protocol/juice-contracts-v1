@@ -207,24 +207,6 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
       );
   }
 
-  /**
-      @notice
-      Whether or not a project can still print premined tickets.
-
-      @param _projectId The ID of the project to get the status of.
-
-      @return Boolean flag.
-    */
-  function canPrintPreminedTickets(uint256 _projectId) public view override returns (bool) {
-    return
-      // The total supply of tickets must equal the preconfigured ticket count.
-      ticketBooth.totalSupplyOf(_projectId) == _preconfigureTicketCountOf[_projectId] &&
-      // The above condition is still possible after post-configured tickets have been printed due to ticket redeeming.
-      // The only case when processedTicketTracker is 0 is before redeeming and printing reserved tickets.
-      _processedTicketTrackerOf[_projectId] >= 0 &&
-      uint256(_processedTicketTrackerOf[_projectId]) == _preconfigureTicketCountOf[_projectId];
-  }
-
   // --- external transactions --- //
 
   /** 
@@ -375,7 +357,12 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
     uint256 _packedMetadata = _validateAndPackFundingCycleMetadata(_metadata);
 
     // If the project can still print premined tickets configure the active funding cycle instead of creating a standby one.
-    bool _shouldConfigureActive = canPrintPreminedTickets(_projectId);
+    bool _shouldConfigureActive = ticketBooth.totalSupplyOf(_projectId) == // The total supply of tickets must equal the preconfigured ticket count.
+      _preconfigureTicketCountOf[_projectId] &&
+      // The above condition is still possible after post-configured tickets have been printed due to ticket redeeming.
+      // The only case when processedTicketTracker is 0 is before redeeming and printing reserved tickets.
+      _processedTicketTrackerOf[_projectId] >= 0 &&
+      uint256(_processedTicketTrackerOf[_projectId]) == _preconfigureTicketCountOf[_projectId];
 
     // Configure the funding stage's state.
     FundingCycle memory _fundingCycle = fundingCycles.configure(
@@ -399,25 +386,20 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
 
   /** 
       @notice 
-      Allows a project to print tickets for a specified beneficiary before payments have been received.
-
-      @dev 
-      This can only be done if the project hasn't yet received a payment after configuring a funding cycle.
+      Allows a project to print tickets for a specified beneficiary.
 
       @dev
-      Only a project's owner or a designated operator can print premined tickets.
+      Only a project's owner or a designated operator can print tickets.
 
-      @param _projectId The ID of the project to premine tickets for.
-      @param _amount The amount to base the ticket premine off of.
-      @param _currency The currency of the amount to base the ticket premine off of. 
+      @param _projectId The ID of the project to print tickets for.
+      @param _amount The amount of tickets to print.
       @param _beneficiary The address to send the printed tickets to.
       @param _memo A memo to leave with the printing.
       @param _preferUnstakedTickets If there is a preference to unstake the printed tickets.
     */
-  function printPreminedTickets(
+  function printTickets(
     uint256 _projectId,
     uint256 _amount,
-    uint256 _currency,
     address _beneficiary,
     string memory _memo,
     bool _preferUnstakedTickets
@@ -429,42 +411,21 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
     // Can't send to the zero address.
     require(_beneficiary != address(0), 'T::printTickets: ZERO_ADDRESS');
 
-    // Get the current funding cycle to read the weight and currency from.
-    uint256 _weight = fundingCycles.BASE_WEIGHT();
-
-    // Get the current funding cycle to read the weight and currency from.
-    // Get the currency price of ETH.
-    uint256 _ethPrice = prices.getETHPriceFor(_currency);
-
-    // Multiply the amount by the funding cycle's weight to determine the amount of tickets to print.
-    uint256 _weightedAmount = PRBMathUD60x18.mul(PRBMathUD60x18.div(_amount, _ethPrice), _weight);
-
-    // Make sure the project hasnt printed tickets that werent preconfigure.
-    // Do this check after the external calls above.
-    require(canPrintPreminedTickets(_projectId), 'T::printTickets: ALREADY_ACTIVE');
-
     // Set the preconfigure tickets as processed so that reserved tickets cant be minted against them.
     // Make sure int casting isnt overflowing the int. 2^255 - 1 is the largest number that can be stored in an int.
     require(
       _processedTicketTrackerOf[_projectId] < 0 ||
-        uint256(_processedTicketTrackerOf[_projectId]) + uint256(_weightedAmount) <=
+        uint256(_processedTicketTrackerOf[_projectId]) + uint256(_amount) <=
         uint256(type(int256).max),
       'T::printTickets: INT_LIMIT_REACHED'
     );
 
-    _processedTicketTrackerOf[_projectId] =
-      _processedTicketTrackerOf[_projectId] +
-      int256(_weightedAmount);
-
-    // Set the count of preconfigure tickets this project has printed.
-    _preconfigureTicketCountOf[_projectId] =
-      _preconfigureTicketCountOf[_projectId] +
-      _weightedAmount;
+    _processedTicketTrackerOf[_projectId] = _processedTicketTrackerOf[_projectId] + int256(_amount);
 
     // Print the project's tickets for the beneficiary.
-    ticketBooth.print(_beneficiary, _projectId, _weightedAmount, _preferUnstakedTickets);
+    ticketBooth.print(_beneficiary, _projectId, _amount, _preferUnstakedTickets);
 
-    emit PrintPreminedTickets(_projectId, _beneficiary, _amount, _currency, _memo, msg.sender);
+    emit PrintTickets(_projectId, _beneficiary, _amount, _memo, msg.sender);
   }
 
   /**

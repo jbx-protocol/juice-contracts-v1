@@ -68,11 +68,10 @@ interface ITerminalV1_1 {
 
   event AcceptGovernance(address governance);
 
-  event PrintPreminedTickets(
+  event PrintTickets(
     uint256 indexed projectId,
     address indexed beneficiary,
     uint256 amount,
-    uint256 currency,
     string memo,
     address caller
   );
@@ -106,8 +105,6 @@ interface ITerminalV1_1 {
     view
     returns (uint256);
 
-  function canPrintPreminedTickets(uint256 _projectId) external view returns (bool);
-
   function balanceOf(uint256 _projectId) external view returns (uint256);
 
   function currentOverflowOf(uint256 _projectId) external view returns (uint256);
@@ -138,10 +135,9 @@ interface ITerminalV1_1 {
     TicketMod[] memory _ticketMods
   ) external returns (uint256);
 
-  function printPreminedTickets(
+  function printTickets(
     uint256 _projectId,
     uint256 _amount,
-    uint256 _currency,
     address _beneficiary,
     string memory _memo,
     bool _preferUnstakedTickets
