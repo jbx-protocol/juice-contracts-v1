@@ -6,7 +6,7 @@ import configure from './configure';
 import deploy from './deploy';
 import migrate from './migrate';
 import pay from './pay';
-import printPreminedTickets from './print_premined_tickets';
+import printTickets from './print_tickets';
 import printReservedTickets from './print_reserved_tickets';
 import redeem from './redeem';
 import setFee from './set_fee';
@@ -76,7 +76,7 @@ export default function () {
   describe('deploy(...)', deploy);
   describe('configure(...)', configure);
   describe('pay(...)', pay);
-  describe('printPremineTickets(...)', printPreminedTickets);
+  describe('printTickets(...)', printTickets);
   describe('redeem(...)', redeem);
   describe('tap(...)', tap);
   describe('printReservedTickets(...)', printReservedTickets);

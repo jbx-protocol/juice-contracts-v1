@@ -36,7 +36,7 @@ const tests = {
       fn: ({ governance }) => ({
         caller: governance,
         terminal: constants.AddressZero,
-        revert: 'T::allowMigration: ZERO_ADDRESS',
+        revert: 'TerminalV1_1::allowMigration: ZERO_ADDRESS',
       }),
     },
     {
@@ -44,7 +44,7 @@ const tests = {
       fn: ({ governance, targetContract }) => ({
         caller: governance,
         terminal: targetContract.address,
-        revert: 'T::allowMigration: NO_OP',
+        revert: 'TerminalV1_1::allowMigration: NO_OP',
       }),
     },
   ],

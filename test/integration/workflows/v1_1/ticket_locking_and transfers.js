@@ -526,7 +526,7 @@ export default [
         revert:
           // No op if no tickets are being redeemed, or if there's no amount to claim.
           ticketsToRedeem.eq(0)
-            ? 'T::redeem: NO_OP'
+            ? 'TerminalV1_1::redeem: NO_OP'
             : amountToLock.gt(0) && 'TicketBooth::redeem: INSUFFICIENT_FUNDS',
       });
 
@@ -596,9 +596,9 @@ export default [
         ],
         revert:
           ticketsToRedeem.eq(0)
-            ? 'T::redeem: NO_OP'
+            ? 'TerminalV1_1::redeem: NO_OP'
             : // If the locked amount is zero, the tickets have already been redeemed.
-            amountToLock.eq(0) && 'T::claimableOverflow: INSUFFICIENT_TICKETS',
+            amountToLock.eq(0) && 'TerminalV1_1::claimableOverflow: INSUFFICIENT_TICKETS',
       });
     },
   },

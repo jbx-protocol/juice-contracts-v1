@@ -253,15 +253,17 @@ export default [
   {
     description:
       'Configuring a project should allow overriding locked mods for the new configuration',
-    fn: ({
+    fn: async ({
       constants,
       contracts,
       executeFn,
       BigNumber,
       randomBigNumberFn,
+      incrementFundingCycleIdFn,
       local: { owner, expectedProjectId, unlockedMod1 },
-    }) =>
-      executeFn({
+    }) => {
+      incrementFundingCycleIdFn();
+      await executeFn({
         caller: owner,
         contract: contracts.terminalV1_1,
         fn: 'configure',
@@ -292,7 +294,8 @@ export default [
           [],
           [unlockedMod1],
         ],
-      }),
+      });
+    }
   },
   {
     description: 'Check that the new configuration has its mods',

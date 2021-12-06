@@ -24,6 +24,7 @@ const tests = {
       description: 'reserved rate 100%',
       fn: () => ({
         reservedRate: 200,
+        unreservedWeightedAmount: BigNumber.from(0)
       }),
     },
   ],
@@ -32,21 +33,21 @@ const tests = {
       description: 'paid zero',
       fn: () => ({
         amount: BigNumber.from(0),
-        revert: 'T::pay: BAD_AMOUNT',
+        revert: 'TerminalV1_1::pay: BAD_AMOUNT',
       }),
     },
     {
       description: 'paused',
       fn: () => ({
         paused: true,
-        revert: 'T::pay: PAUSED',
+        revert: 'TerminalV1_1::pay: PAUSED',
       }),
     },
     {
       description: 'zero address beneficiary',
       fn: () => ({
         beneficiary: constants.AddressZero,
-        revert: 'T::pay: ZERO_ADDRESS',
+        revert: 'TerminalV1_1::pay: ZERO_ADDRESS',
       }),
     },
   ],
@@ -106,6 +107,7 @@ const ops =
         paused = false,
         amount = BigNumber.from(10).pow(18).mul(42),
         weight = BigNumber.from(10).pow(18).mul(10),
+        weightedAmount = BigNumber.from(10).pow(18).mul(420),
         unreservedWeightedAmount = BigNumber.from(10).pow(18).mul(399),
         reservedRate = 10,
         projectId = 42,
@@ -115,8 +117,6 @@ const ops =
       } = {
         ...custom,
       };
-
-      console.log({ paused });
 
       // Create a packed metadata value to store the reserved rate.
       let packedMetadata = BigNumber.from(0);
@@ -128,8 +128,6 @@ const ops =
       packedMetadata = packedMetadata.shl(8);
       packedMetadata = packedMetadata.add(reservedRate);
       packedMetadata = packedMetadata.shl(8);
-
-      console.log({ packedMetadata });
 
       return [
         mockFn({
@@ -205,7 +203,7 @@ const ops =
           events: [
             {
               name: 'Pay',
-              args: [fundingCycleId, projectId, beneficiary, amount, memo, caller.address],
+              args: [fundingCycleId, projectId, beneficiary, amount, unreservedWeightedAmount, weightedAmount, memo, caller.address],
             },
           ],
           revert,
@@ -216,21 +214,7 @@ const ops =
           fn: 'balanceOf',
           args: [projectId],
           value: addToBalance.add(amount),
-        }),
-        mockFn({
-          condition: !revert,
-          mockContract: mockContracts.ticketBooth,
-          fn: 'totalSupplyOf',
-          args: [projectId],
-          returns: [unreservedWeightedAmount],
-        }),
-        check({
-          condition: !revert,
-          contract: targetContract,
-          fn: 'canPrintPreminedTickets',
-          args: [projectId],
-          value: fundingCycleNumber === 0,
-        }),
+        })
       ];
     };
 

@@ -93,7 +93,7 @@ export default [
           min: BigNumber.from(1000),
           max: (await getBalanceFn(payer.address)).div(100),
         }),
-        revert: "T::pay: PAUSED"
+        revert: "TerminalV1_1::pay: PAUSED"
       })
     }
   },
@@ -105,8 +105,13 @@ export default [
       BigNumber,
       executeFn,
       randomBigNumberFn,
+      incrementFundingCycleIdFn,
       local: { owner, expectedProjectId },
     }) => {
+
+      // Burn the unused funding cycle ID id.
+      incrementFundingCycleIdFn();
+
       await executeFn({
         caller: owner,
         contract: contracts.terminalV1_1,

@@ -134,11 +134,10 @@ export default [
       await executeFn({
         caller: owner,
         contract: contracts.terminalV1_1,
-        fn: 'printPreminedTickets',
+        fn: 'printTickets',
         args: [
           expectedProjectId,
           preminePrintAmount,
-          currency,
           preconfigTicketBeneficiary.address,
           randomStringFn(),
           randomBoolFn(),
@@ -168,8 +167,7 @@ export default [
   },
   {
     description: 'The preconfig ticket beneficiary should now also have tickets from the premine',
-    fn: async ({
-      constants,
+    fn: ({
       contracts,
       checkFn,
       randomSignerFn,
@@ -179,20 +177,14 @@ export default [
         preminePrintAmount,
         expectedPreminedPaidTicketAmount,
       },
-    }) => {
-      // The ticket amount is based on the initial funding cycle's weight.
-      const expectedPreminedPrintedTicketAmount = preminePrintAmount.mul(
-        constants.InitialWeightMultiplier,
-      );
-
-      await checkFn({
+    }) =>
+      checkFn({
         caller: randomSignerFn(),
         contract: contracts.ticketBooth,
         fn: 'balanceOf',
         args: [preconfigTicketBeneficiary.address, expectedProjectId],
-        expect: expectedPreminedPaidTicketAmount.add(expectedPreminedPrintedTicketAmount),
-      });
-    },
+        expect: expectedPreminedPaidTicketAmount.add(preminePrintAmount),
+      })
   },
   {
     description: 'Configure the projects funding cycle',
@@ -675,7 +667,7 @@ export default [
           randomAddressFn({ exclude: [owner.address] }),
           randomBoolFn(),
         ],
-        revert: ticketAmount.eq(0) && 'T::redeem: NO_OP',
+        revert: ticketAmount.eq(0) && 'TerminalV1_1::redeem: NO_OP',
       });
     },
   },
@@ -730,7 +722,7 @@ export default [
           randomAddressFn(),
           randomBoolFn(),
         ],
-        revert: ticketAmount.eq(0) && 'T::redeem: NO_OP',
+        revert: ticketAmount.eq(0) && 'TerminalV1_1::redeem: NO_OP',
       });
     },
   },

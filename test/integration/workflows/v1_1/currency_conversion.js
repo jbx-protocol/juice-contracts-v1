@@ -121,65 +121,6 @@ export default [
     },
   },
   {
-    description: 'Print premined tickets. The argument is denominated in `currency`',
-    fn: async ({
-      contracts,
-      executeFn,
-      BigNumber,
-      randomBigNumberFn,
-      randomBoolFn,
-      randomStringFn,
-      randomAddressFn,
-      local: { owner, rate, decimals, currency, expectedProjectId },
-    }) => {
-      // An account that will receive tickets for the premine.
-      const premineTicketBeneficiary = randomAddressFn();
-      const premineValueInWei = randomBigNumberFn({
-        min: BigNumber.from(1),
-        // Use an arbitrary large big number that can be added to other large big numbers without risk of running into uint256 boundaries.
-        max: BigNumber.from(10).pow(30),
-      });
-      // Convert the premine value to the currency.
-      const premineValueInCurrency = premineValueInWei.mul(
-        rate.div(BigNumber.from(10).pow(decimals)),
-      );
-      await executeFn({
-        caller: owner,
-        contract: contracts.terminalV1_1,
-        fn: 'printPreminedTickets',
-        args: [
-          expectedProjectId,
-          premineValueInCurrency,
-          currency,
-          premineTicketBeneficiary,
-          randomStringFn(),
-          randomBoolFn(),
-        ],
-      });
-      return { premineTicketBeneficiary, premineValueInWei };
-    },
-  },
-  {
-    description: 'Check that the beneficiary of the premine got the correct amount of tickets',
-    fn: async ({
-      constants,
-      contracts,
-      checkFn,
-      randomSignerFn,
-      local: { premineTicketBeneficiary, premineValueInWei, expectedProjectId },
-    }) => {
-      // The expected number of tickets to receive during the premine.
-      const expectedPremineTickets = premineValueInWei.mul(constants.InitialWeightMultiplier);
-      await checkFn({
-        caller: randomSignerFn(),
-        contract: contracts.ticketBooth,
-        fn: 'balanceOf',
-        args: [premineTicketBeneficiary, expectedProjectId],
-        expect: expectedPremineTickets,
-      });
-    },
-  },
-  {
     description: 'Make a payment to the project, denominated in `currency`',
     fn: async ({
       contracts,

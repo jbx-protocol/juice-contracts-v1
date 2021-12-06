@@ -13,7 +13,7 @@ import failedBallot from './failed_ballot';
 import iteratedFailedBallot from './iterated_failed_ballot';
 import governance from './governance';
 import setFee from './set_fee';
-import printPreminedTickets from './print_premined_tickets';
+import printTickets from './print_tickets';
 import projects from './projects';
 import currencyConversion from './currency_conversion';
 import transferProjectOwnership from './transfer_project_ownership';
@@ -46,7 +46,7 @@ export {
   iteratedFailedBallot,
   governance,
   setFee,
-  printPreminedTickets,
+  printTickets,
   currencyConversion,
   transferProjectOwnership,
   directPaymentAddresses,

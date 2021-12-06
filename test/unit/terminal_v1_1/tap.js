@@ -154,7 +154,7 @@ const tests = {
       description: 'unexpected currency',
       fn: () => ({
         currency: 19,
-        revert: 'T::tap: UNEXPECTED_CURRENCY',
+        revert: 'TerminalV1_1::tap: UNEXPECTED_CURRENCY',
       }),
     },
     {
@@ -163,7 +163,7 @@ const tests = {
         addToBalance: BigNumber.from(10).pow(18).mul(1),
         ethPrice: BigNumber.from(10).pow(18).mul(1),
         amount: BigNumber.from(10).pow(18).mul(1).add(1),
-        revert: 'T::tap: INSUFFICIENT_FUNDS',
+        revert: 'TerminalV1_1::tap: INSUFFICIENT_FUNDS',
       }),
     },
     {
@@ -172,7 +172,7 @@ const tests = {
         amount: BigNumber.from(10).pow(18).mul(1),
         ethPrice: BigNumber.from(10).pow(18).mul(1),
         minReturnedWei: BigNumber.from(10).pow(18).mul(1).add(1),
-        revert: 'T::tap: INADEQUATE',
+        revert: 'TerminalV1_1::tap: INADEQUATE',
       }),
     },
     {
@@ -187,7 +187,7 @@ const tests = {
           lockedUntil: 0,
           terminal: { address: constants.AddressZero },
         },
-        revert: 'T::tap: BAD_MOD',
+        revert: 'TerminalV1_1::tap: BAD_MOD',
       }),
     },
   ],

@@ -37,7 +37,7 @@ import {
   ticketLockingAndTransfers as _ticketLockingAndTransfers_v1_1,
   redeem as _redeem_v1_1,
   printReservedTickets as _printReservedTickets_v1_1,
-  printPreminedTickets as _printPreminedTickets_v1_1,
+  printTickets as _printTickets_v1_1,
   issueTickets as _issueTickets_v1_1,
   tap as _tap_v1_1,
   takeFee as _takeFee_v1_1,
@@ -311,8 +311,8 @@ export default function () {
     describe('Redeem tickets for overflow', run(_redeem_v1_1));
     describe('Prints reserved tickets', run(_printReservedTickets_v1_1));
     describe(
-      'Projects can print premined tickets before a payment has been made to it',
-      run(_printPreminedTickets_v1_1),
+      'Projects can print tickets',
+      run(_printTickets_v1_1),
     );
     describe('Issues tickets and honors preference', run(_issueTickets_v1_1));
     describe('Tap funds up to the configured target', run(_tap_v1_1));

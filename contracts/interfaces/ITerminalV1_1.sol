@@ -19,6 +19,23 @@ struct FundingCycleMetadata2 {
 }
 
 interface ITerminalV1_1 {
+  event Pay(
+    uint256 indexed fundingCycleId,
+    uint256 indexed projectId,
+    address indexed beneficiary,
+    uint256 amount,
+    uint256 beneficiaryTokens,
+    uint256 totalTokens,
+    string note,
+    address caller
+  );
+
+  event AddToBalance(uint256 indexed projectId, uint256 value, address caller);
+
+  event AllowMigration(ITerminal allowed);
+
+  event Migrate(uint256 indexed projectId, ITerminal indexed to, uint256 _amount, address caller);
+
   event Configure(uint256 indexed fundingCycleId, uint256 indexed projectId, address caller);
 
   event Tap(

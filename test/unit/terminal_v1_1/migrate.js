@@ -159,7 +159,7 @@ const tests = {
               governance.address,
             ]),
           },
-          revert: 'T::migrate: UNAUTHORIZED',
+          revert: 'TerminalV1_1::migrate: UNAUTHORIZED',
         };
       },
     },
@@ -191,7 +191,7 @@ const tests = {
             allowMigration: false,
             currentTerminal: targetContract,
           },
-          revert: 'T::migrate: NOT_ALLOWED',
+          revert: 'TerminalV1_1::migrate: NOT_ALLOWED',
         };
       },
     },

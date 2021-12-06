@@ -85,7 +85,7 @@ export default [
         args: [],
         revert:
           firstAppointedGovernance.address !== secondAppointedGovernance.address &&
-          'T::acceptGovernance: UNAUTHORIZED',
+          'TerminalV1_1::acceptGovernance: UNAUTHORIZED',
       }),
   },
   {

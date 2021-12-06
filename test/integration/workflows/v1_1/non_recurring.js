@@ -264,56 +264,6 @@ export default [
       }),
   },
   {
-    description: 'Reconfiguring the project should still be possible before a payment is made',
-    fn: async ({
-      contracts,
-      executeFn,
-      BigNumber,
-      randomBigNumberFn,
-      constants,
-      local: {
-        owner,
-        expectedProjectId,
-        target1,
-        cycleLimit1,
-        ballot1,
-        discountRate1,
-        reconfigurationBondingCurveRate1,
-        bondingCurveRate1,
-        reservedRate1,
-      },
-    }) => {
-      const duration2 = randomBigNumberFn({
-        min: BigNumber.from(1),
-        max: constants.MaxUint16,
-      });
-      await executeFn({
-        caller: owner,
-        contract: contracts.terminalV1_1,
-        fn: 'configure',
-        args: [
-          expectedProjectId,
-          {
-            target: target1,
-            currency,
-            duration: duration2,
-            cycleLimit: cycleLimit1,
-            discountRate: discountRate1,
-            ballot: ballot1,
-          },
-          {
-            reservedRate: reservedRate1,
-            bondingCurveRate: bondingCurveRate1,
-            reconfigurationBondingCurveRate: reconfigurationBondingCurveRate1,
-          },
-          [],
-          [],
-        ],
-      });
-      return { duration2 };
-    },
-  },
-  {
     description: 'Make a payment to the project to lock it in',
     fn: async ({
       contracts,
@@ -395,7 +345,7 @@ export default [
   },
   {
     description: 'Fastforward a after the duration',
-    fn: async ({ fastforwardFn, local: { duration2 } }) => fastforwardFn(duration2.mul(86400)),
+    fn: async ({ fastforwardFn, local: { duration1 } }) => fastforwardFn(duration1.mul(86400)),
   },
   {
     description: 'There should be no current cycle',

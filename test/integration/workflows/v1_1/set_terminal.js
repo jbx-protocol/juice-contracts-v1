@@ -66,7 +66,7 @@ export default [
       executeFn({
         caller: owner,
         contract: contracts.terminalV1_1,
-        fn: 'printPreminedTickets',
+        fn: 'printTickets',
         args: [
           expectedProjectId,
           // Use an arbitrary large big number that can be added to other large big numbers without risk of running into uint256 boundaries.
@@ -74,7 +74,6 @@ export default [
             min: BigNumber.from(0),
             max: BigNumber.from(10).pow(30),
           }),
-          currency,
           randomAddressFn(),
           randomStringFn(),
           randomBoolFn(),
@@ -185,7 +184,7 @@ export default [
       executeFn({
         caller: owner,
         contract: contracts.terminalV1_1,
-        fn: 'printPreminedTickets',
+        fn: 'printTickets',
         args: [
           expectedProjectId,
           // Use an arbitrary large big number that can be added to other large big numbers without risk of running into uint256 boundaries.
@@ -193,7 +192,6 @@ export default [
             min: BigNumber.from(1),
             max: BigNumber.from(10).pow(30),
           }),
-          currency,
           randomAddressFn(),
           randomStringFn(),
           randomBoolFn(),

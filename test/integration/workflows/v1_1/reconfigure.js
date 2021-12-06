@@ -292,8 +292,10 @@ export default [
       executeFn,
       randomBigNumberFn,
       BigNumber,
+      incrementFundingCycleIdFn,
       local: { owner, expectedProjectId },
     }) => {
+      const expectedFundingCycleId2 = incrementFundingCycleIdFn();
       const target2 = randomBigNumberFn();
       const currency2 = randomBigNumberFn({ max: constants.MaxUint8 });
       const duration2 = randomBigNumberFn({
@@ -350,11 +352,12 @@ export default [
         reservedRate2,
         bondingCurveRate2,
         reconfigurationBondingCurveRate2,
+        expectedFundingCycleId2
       };
     },
   },
   {
-    description: 'Make sure the first funding cycle got updated',
+    description: 'Make sure the first funding cycle did not get updated',
     fn: async ({
       contracts,
       checkFn,
@@ -363,12 +366,6 @@ export default [
       randomSignerFn,
       local: {
         originalTimeMark,
-        cycleLimit2,
-        ballot2,
-        duration2,
-        target2,
-        currency2,
-        discountRate2,
         reconfigurationBondingCurveRate2,
         bondingCurveRate2,
         reservedRate2,
@@ -378,6 +375,12 @@ export default [
         expectedInitialWeight,
         expectedFee,
         expectedInitialTapped,
+        cycleLimit1,
+        ballot1,
+        duration1,
+        target1,
+        discountRate1,
+        expectedPackedMetadata1
       },
     }) => {
       let expectedPackedMetadata2 = BigNumber.from(0);
@@ -398,19 +401,19 @@ export default [
           expectedProjectId,
           expectedFundingCycleNumber1,
           BigNumber.from(expectedInitialBasedOn),
-          timeMark,
-          cycleLimit2,
-          expectedInitialWeight,
-          ballot2,
-          // The start time should stay the same.
           originalTimeMark,
-          duration2,
-          target2,
-          currency2,
+          // Cycle limit should be 0 for the first funding cycle.
+          cycleLimit1,
+          expectedInitialWeight,
+          ballot1,
+          originalTimeMark,
+          duration1,
+          target1,
+          BigNumber.from(currency),
           expectedFee,
-          discountRate2,
+          discountRate1,
           expectedInitialTapped,
-          expectedPackedMetadata2,
+          expectedPackedMetadata1,
         ],
       });
 
@@ -432,7 +435,7 @@ export default [
       executeFn({
         caller: owner,
         contract: contracts.terminalV1_1,
-        fn: 'printPreminedTickets',
+        fn: 'printTickets',
         args: [
           expectedProjectId,
           randomBigNumberFn({
@@ -440,7 +443,6 @@ export default [
             // Use an arbitrary large big number that can be added to other large big numbers without risk of running into uint256 boundaries.
             max: BigNumber.from(10).pow(30),
           }),
-          currency,
           randomAddressFn(),
           randomStringFn(),
           randomBoolFn(),
@@ -491,7 +493,7 @@ export default [
       }),
   },
   {
-    description: 'Make sure the first funding cycle got updated',
+    description: 'Make sure the first funding cycle did not get updated',
     fn: async ({
       contracts,
       checkFn,
@@ -500,18 +502,18 @@ export default [
       BigNumber,
       local: {
         originalTimeMark,
-        target1,
-        cycleLimit1,
         ballot1,
-        duration1,
-        discountRate1,
-        expectedPackedMetadata1,
+        cycleLimit1,
         expectedFundingCycleId1,
         expectedFundingCycleNumber1,
         expectedProjectId,
         expectedInitialWeight,
         expectedFee,
         expectedInitialTapped,
+        duration1,
+        target1,
+        discountRate1,
+        expectedPackedMetadata1
       },
     }) => {
       await checkFn({
@@ -524,16 +526,16 @@ export default [
           expectedProjectId,
           expectedFundingCycleNumber1,
           BigNumber.from(expectedInitialBasedOn),
-          timeMark,
+          originalTimeMark,
+          // Cycle limit should be 0 for the first funding cycle.
           cycleLimit1,
           expectedInitialWeight,
           ballot1,
-          // The start time should stay the same.
           originalTimeMark,
           duration1,
           target1,
           BigNumber.from(currency),
-          BigNumber.from(expectedFee),
+          expectedFee,
           discountRate1,
           expectedInitialTapped,
           expectedPackedMetadata1,
@@ -577,7 +579,7 @@ export default [
     },
   },
   {
-    description: 'Reconfiguring should create a new funding cycle',
+    description: 'Reconfiguring should update new funding cycle',
     fn: async ({
       contracts,
       executeFn,
@@ -595,10 +597,9 @@ export default [
         bondingCurveRate2,
         reconfigurationBondingCurveRate2,
         expectedProjectId,
+        expectedFundingCycleId2
       },
     }) => {
-      const expectedFundingCycleId2 = incrementFundingCycleIdFn();
-
       // The reconfigured funding cycle should be the second.
       const expectedFundingCycleNumber2 = BigNumber.from(2);
 
@@ -694,7 +695,6 @@ export default [
       BigNumber,
       local: {
         originalTimeMark,
-        configuredTimeMark,
         target1,
         cycleLimit1,
         ballot1,
@@ -719,7 +719,7 @@ export default [
           expectedProjectId,
           expectedFundingCycleNumber1,
           BigNumber.from(expectedInitialBasedOn),
-          configuredTimeMark,
+          originalTimeMark,
           cycleLimit1,
           expectedInitialWeight,
           ballot1,
@@ -825,7 +825,7 @@ export default [
           expectedProjectId,
           expectedFundingCycleNumber1,
           BigNumber.from(expectedInitialBasedOn),
-          configuredTimeMark,
+          originalTimeMark,
           cycleLimit1,
           expectedInitialWeight,
           ballot1,
@@ -860,7 +860,6 @@ export default [
       BigNumber,
       local: {
         originalTimeMark,
-        configuredTimeMark,
         target1,
         cycleLimit1,
         ballot1,
@@ -885,7 +884,7 @@ export default [
           expectedProjectId,
           expectedFundingCycleNumber1,
           BigNumber.from(expectedInitialBasedOn),
-          configuredTimeMark,
+          originalTimeMark,
           cycleLimit1,
           expectedInitialWeight,
           ballot1,

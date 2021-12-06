@@ -369,6 +369,7 @@ export default [
         redeemableTicketsOfTicketBeneficiary1,
       );
 
+      console.log({ redeemableTicketsOfTicketBeneficiary1, redeemableAmountOfTicketBeneficiary1 })
       await executeFn({
         caller: ticketBeneficiary1,
         contract: contracts.terminalV1_1,
@@ -1071,7 +1072,7 @@ export default [
           redeemBeneficiary4,
           randomBoolFn(),
         ],
-        revert: expectNoOp && 'T::redeem: NO_OP',
+        revert: expectNoOp && 'TerminalV1_1::redeem: NO_OP',
       });
 
       // If the requested reverted with no op, the tickets wont be redeemed.

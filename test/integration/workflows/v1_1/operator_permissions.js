@@ -30,24 +30,23 @@ const operations = [
       ],
       domain: expectedProjectId,
       permissionIndex: 1,
-      authorizedRevert: 'T::_validateAndPackFundingCycleMetadata: BAD_RESERVED_RATE',
+      authorizedRevert: 'TerminalV1_1::_validateAndPackFundingCycleMetadata: BAD_RESERVED_RATE',
     }),
   },
   {
     expand: ({ contracts, BigNumber, constants, local: { expectedProjectId } }) => ({
       contract: contracts.terminalV1_1,
-      fn: 'printPreminedTickets',
+      fn: 'printTickets',
       args: [
         expectedProjectId,
         BigNumber.from(1000),
-        BigNumber.from(0),
         constants.AddressZero,
         '',
         false,
       ],
       domain: expectedProjectId,
-      permissionIndex: 2,
-      authorizedRevert: 'T::printTickets: ZERO_ADDRESS',
+      permissionIndex: 17,
+      authorizedRevert: 'TerminalV1_1::printTickets: ZERO_ADDRESS',
     }),
   },
   {
@@ -64,7 +63,7 @@ const operations = [
       ],
       domain: expectedProjectId,
       permissionIndex: 3,
-      authorizedRevert: 'T::redeem: ZERO_ADDRESS',
+      authorizedRevert: 'TerminalV1_1::redeem: ZERO_ADDRESS',
     }),
   },
   {
@@ -74,7 +73,7 @@ const operations = [
       args: [expectedProjectId, constants.AddressZero],
       domain: expectedProjectId,
       permissionIndex: 4,
-      authorizedRevert: 'T::migrate: NOT_ALLOWED',
+      authorizedRevert: 'TerminalV1_1::migrate: NOT_ALLOWED',
     }),
   },
   {

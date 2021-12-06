@@ -44,13 +44,7 @@ const tests = {
           },
         ],
       }),
-    },
-    {
-      description: 'with a ticket supply',
-      fn: () => ({
-        addToTicketSupply: 1,
-      }),
-    },
+    }
   ],
   failure: [
     {
@@ -66,7 +60,7 @@ const tests = {
         metadata: {
           reservedRate: 201,
         },
-        revert: 'T::_validateAndPackFundingCycleMetadata: BAD_RESERVED_RATE',
+        revert: 'TerminalV1_1::_validateAndPackFundingCycleMetadata: BAD_RESERVED_RATE',
       }),
     },
     {
@@ -75,7 +69,7 @@ const tests = {
         metadata: {
           bondingCurveRate: 201,
         },
-        revert: 'T::_validateAndPackFundingCycleMetadata: BAD_BONDING_CURVE_RATE',
+        revert: 'TerminalV1_1::_validateAndPackFundingCycleMetadata: BAD_BONDING_CURVE_RATE',
       }),
     },
     {
@@ -85,7 +79,7 @@ const tests = {
           reconfigurationBondingCurveRate: 201,
         },
         revert:
-          'T::_validateAndPackFundingCycleMetadata: BAD_RECONFIGURATION_BONDING_CURVE_RATE',
+          'TerminalV1_1::_validateAndPackFundingCycleMetadata: BAD_RECONFIGURATION_BONDING_CURVE_RATE',
       }),
     },
   ],
@@ -207,16 +201,6 @@ const ops =
         ...(!revert
           ? [
             mockFn({
-              mockContract: mockContracts.ticketBooth,
-              fn: 'totalSupplyOf',
-              args: [projectId],
-              returns: [addToTicketSupply],
-            }),
-          ]
-          : []),
-        ...(!revert
-          ? [
-            mockFn({
               condition: !revert,
               mockContract: mockContracts.fundingCycles,
               fn: 'configure',
@@ -233,7 +217,7 @@ const ops =
                 packedMetadata = packedMetadata.shl(8);
                 packedMetadata = packedMetadata.add(metadata.reservedRate);
                 packedMetadata = packedMetadata.shl(8);
-                return [projectId, properties, packedMetadata, 10, !addToTicketSupply];
+                return [projectId, properties, packedMetadata, 10, false];
               },
               returns: [
                 {
