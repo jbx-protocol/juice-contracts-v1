@@ -27,6 +27,13 @@ const tests = {
         prePrintAmount: BigNumber.from(10).pow(18).mul(42)
       }),
     },
+    {
+      description: 'not allowed but no funding cycle',
+      fn: () => ({
+        allowed: false,
+        fundingCycleNumber: 0
+      }),
+    },
   ],
   failure: [
     {
@@ -35,6 +42,13 @@ const tests = {
         owner: addrs[0].address,
         permissionFlag: false,
         revert: 'Operatable: UNAUTHORIZED',
+      }),
+    },
+    {
+      description: 'not allowed',
+      fn: () => ({
+        allowed: false,
+        revert: 'TerminalV1_1::printTickets: NOT_ALLOWED',
       }),
     },
     {
@@ -82,7 +96,7 @@ const executeFn =
     };
 
 const ops =
-  ({ BigNumber, deployer, mockContracts, targetContract }) =>
+  ({ BigNumber, constants, deployer, mockContracts, targetContract }) =>
     (custom) => {
       const {
         caller = deployer,
@@ -94,12 +108,52 @@ const ops =
         amount = BigNumber.from(10).pow(18).mul(210),
         prePrintAmount = BigNumber.from(10).pow(18).mul(0),
         projectId = 42,
+        fundingCycleNumber = 1,
         revert,
+        allowed = true,
       } = {
         ...custom,
       };
 
+      // Create a packed metadata value to store the reserved rate.
+      let packedMetadata = BigNumber.from(0);
+      packedMetadata = packedMetadata.add(allowed ? 1 : 0);
+      packedMetadata = packedMetadata.shl(1);
+      packedMetadata = packedMetadata.add(0);
+      packedMetadata = packedMetadata.shl(8);
+      packedMetadata = packedMetadata.add(42);
+      packedMetadata = packedMetadata.shl(8);
+      packedMetadata = packedMetadata.add(42);
+      packedMetadata = packedMetadata.shl(8);
+      packedMetadata = packedMetadata.add(42);
+      packedMetadata = packedMetadata.shl(8);
+
       return [
+        mockFn({
+          mockContract: mockContracts.fundingCycles,
+          fn: 'currentOf',
+          args: [projectId],
+          returns: [
+            {
+              configured: 0,
+              cycleLimit: 0,
+              id: 1,
+              projectId,
+              number: fundingCycleNumber,
+              basedOn: 0,
+              weight: 0,
+              ballot: constants.AddressZero,
+              start: 0,
+              duration: 0,
+              target: 0,
+              currency: 0,
+              fee: 0,
+              discountRate: 0,
+              tapped: 0,
+              metadata: packedMetadata,
+            },
+          ],
+        }),
         mockFn({
           mockContract: mockContracts.projects,
           fn: 'ownerOf',

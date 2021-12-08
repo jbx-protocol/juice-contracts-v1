@@ -2,9 +2,6 @@
   A project can print premined tickets up until the point when a payment is made to it after its configured its first funding cycle.
 */
 
-// The currency will be 0, which corresponds to ETH.
-const currency = 0;
-
 export default [
   {
     description: 'Create a project',
@@ -238,7 +235,7 @@ export default [
   },
   {
     description:
-      "Configuring a funding cycle. This shouldn't affect the ability for project to keep printing premined tickets",
+      "Configuring a funding cycle allowing printing. This shouldn't affect the ability for project to keep printing premined tickets",
     fn: async ({
       executeFn,
       contracts,
@@ -251,6 +248,9 @@ export default [
       // Burn the unused funding cycle ID id.
       incrementFundingCycleIdFn();
 
+      //Allow on-demand reconfigurations.
+      const duration = 0;
+
       await executeFn({
         caller: owner,
         contract: contracts.terminalV1_1,
@@ -260,10 +260,7 @@ export default [
           {
             target: randomBigNumberFn(),
             currency: randomBigNumberFn({ max: constants.MaxUint8 }),
-            duration: randomBigNumberFn({
-              min: BigNumber.from(1),
-              max: constants.MaxUint16,
-            }),
+            duration,
             cycleLimit: randomBigNumberFn({
               max: constants.MaxCycleLimit,
             }),
@@ -278,6 +275,7 @@ export default [
             reconfigurationBondingCurveRate: randomBigNumberFn({
               max: constants.MaxPercent,
             }),
+            ticketPrintingIsAllowed: true
           },
           [],
           [],
@@ -486,6 +484,86 @@ export default [
           randomStringFn(),
           randomBoolFn(),
         ]
+      }),
+  },
+  {
+    description:
+      "Configuring a funding cycle to disallow printing.",
+    fn: async ({
+      executeFn,
+      contracts,
+      randomBigNumberFn,
+      constants,
+      BigNumber,
+      incrementFundingCycleIdFn,
+      local: { expectedProjectId, owner },
+    }) => {
+      // Burn the unused funding cycle ID id.
+      incrementFundingCycleIdFn();
+
+      await executeFn({
+        caller: owner,
+        contract: contracts.terminalV1_1,
+        fn: 'configure',
+        args: [
+          expectedProjectId,
+          {
+            target: randomBigNumberFn(),
+            currency: randomBigNumberFn({ max: constants.MaxUint8 }),
+            duration: randomBigNumberFn({
+              min: BigNumber.from(1),
+              max: constants.MaxUint16,
+            }),
+            cycleLimit: randomBigNumberFn({
+              max: constants.MaxCycleLimit,
+            }),
+            discountRate: randomBigNumberFn({ max: constants.MaxPercent }),
+            ballot: constants.AddressZero,
+          },
+          {
+            reservedRate: randomBigNumberFn({ max: constants.MaxPercent }),
+            bondingCurveRate: randomBigNumberFn({
+              max: constants.MaxPercent,
+            }),
+            reconfigurationBondingCurveRate: randomBigNumberFn({
+              max: constants.MaxPercent,
+            }),
+            ticketPrintingIsAllowed: false
+          },
+          [],
+          [],
+        ],
+      });
+    },
+  },
+  {
+    description: 'Printing more tickets should not be allowed',
+    fn: ({
+      executeFn,
+      contracts,
+      randomBigNumberFn,
+      randomStringFn,
+      randomAddressFn,
+      randomBoolFn,
+      BigNumber,
+      local: { owner, expectedProjectId },
+    }) =>
+      executeFn({
+        caller: owner,
+        contract: contracts.terminalV1_1,
+        fn: 'printTickets',
+        args: [
+          expectedProjectId,
+          randomBigNumberFn({
+            min: BigNumber.from(1),
+            // Use an arbitrary large big number that can be added to other large big numbers without risk of running into uint256 boundaries.
+            max: BigNumber.from(10).pow(30),
+          }),
+          randomAddressFn(),
+          randomStringFn(),
+          randomBoolFn(),
+        ],
+        revert: "TerminalV1_1::printTickets: NOT_ALLOWED"
       }),
   },
 ];

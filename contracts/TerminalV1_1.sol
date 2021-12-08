@@ -398,6 +398,15 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
     // Can't send to the zero address.
     require(_beneficiary != address(0), 'TerminalV1_1::printTickets: ZERO_ADDRESS');
 
+    // Get a reference to the current funding cycle for the project.
+    FundingCycle memory _fundingCycle = fundingCycles.currentOf(_projectId);
+
+    // Make sure printing is allowed if a funding cycle exists.
+    require(
+      _fundingCycle.number == 0 || ((_fundingCycle.metadata >> 33) & 1) == 1,
+      'TerminalV1_1::printTickets: NOT_ALLOWED'
+    );
+
     // Set the preconfigure tickets as processed so that reserved tickets cant be minted against them.
     // Make sure int casting isnt overflowing the int. 2^255 - 1 is the largest number that can be stored in an int.
     require(
@@ -1140,6 +1149,8 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
     packed |= _metadata.reconfigurationBondingCurveRate << 24;
     // pay paused rate in bit 32.
     if (_metadata.payIsPaused) packed |= 1 << 32;
+    // ticket printing allowed in bit 33.
+    if (_metadata.ticketPrintingIsAllowed) packed |= 1 << 33;
   }
 
   /** 

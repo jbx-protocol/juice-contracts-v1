@@ -16,6 +16,7 @@ struct FundingCycleMetadata2 {
   uint256 bondingCurveRate;
   uint256 reconfigurationBondingCurveRate;
   bool payIsPaused;
+  bool ticketPrintingIsAllowed;
 }
 
 interface ITerminalV1_1 {
