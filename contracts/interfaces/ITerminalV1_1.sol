@@ -10,6 +10,7 @@ import './IProjects.sol';
 import './IModStore.sol';
 import './ITerminal.sol';
 import './IOperatorStore.sol';
+import './ITreasuryExtension.sol';
 
 struct FundingCycleMetadata2 {
   uint256 reservedRate;
@@ -17,6 +18,7 @@ struct FundingCycleMetadata2 {
   uint256 reconfigurationBondingCurveRate;
   bool payIsPaused;
   bool ticketPrintingIsAllowed;
+  ITreasuryExtension treasuryExtension;
 }
 
 interface ITerminalV1_1 {

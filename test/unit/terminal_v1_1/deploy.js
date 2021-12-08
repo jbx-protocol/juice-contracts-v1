@@ -5,13 +5,16 @@ const tests = {
   success: [
     {
       description: 'deposit for caller',
-      fn: ({ deployer }) => ({
+      fn: ({ constants, deployer }) => ({
         caller: deployer,
         owner: deployer.address,
         metadata: {
           reservedRate: 200,
           bondingCurveRate: 200,
           reconfigurationBondingCurveRate: 200,
+          payIsPaused: false,
+          ticketPrintingIsAllowed: false,
+          treasuryExtension: constants.AddressZero
         },
         payoutMods: [],
         ticketMods: [],
@@ -19,13 +22,16 @@ const tests = {
     },
     {
       description: 'deposit for another address',
-      fn: ({ deployer, addrs }) => ({
+      fn: ({ constants, deployer, addrs }) => ({
         caller: deployer,
         owner: addrs[0].address,
         metadata: {
           reservedRate: 200,
           bondingCurveRate: 200,
           reconfigurationBondingCurveRate: 200,
+          payIsPaused: false,
+          ticketPrintingIsAllowed: false,
+          treasuryExtension: constants.AddressZero
         },
         payoutMods: [],
         ticketMods: [],
@@ -33,13 +39,16 @@ const tests = {
     },
     {
       description: 'deposit with mods',
-      fn: async ({ deployer, deployMockLocalContractFn }) => ({
+      fn: async ({ constants, deployer, deployMockLocalContractFn }) => ({
         caller: deployer,
         owner: deployer.address,
         metadata: {
           reservedRate: 200,
           bondingCurveRate: 200,
           reconfigurationBondingCurveRate: 200,
+          payIsPaused: false,
+          ticketPrintingIsAllowed: false,
+          treasuryExtension: constants.AddressZero
         },
         payoutMods: [
           {
@@ -68,13 +77,16 @@ const tests = {
   failure: [
     {
       description: 'reserved rate over 100%',
-      fn: ({ deployer }) => ({
+      fn: ({ constants, deployer }) => ({
         caller: deployer,
         owner: deployer.address,
         metadata: {
           reservedRate: 201,
           bondingCurveRate: 200,
           reconfigurationBondingCurveRate: 200,
+          payIsPaused: false,
+          ticketPrintingIsAllowed: false,
+          treasuryExtension: constants.AddressZero
         },
         payoutMods: [],
         ticketMods: [],
@@ -83,13 +95,16 @@ const tests = {
     },
     {
       description: 'bonding curve rate over 100%',
-      fn: ({ deployer }) => ({
+      fn: ({ constants, deployer }) => ({
         caller: deployer,
         owner: deployer.address,
         metadata: {
           reservedRate: 200,
           bondingCurveRate: 201,
           reconfigurationBondingCurveRate: 200,
+          payIsPaused: false,
+          ticketPrintingIsAllowed: false,
+          treasuryExtension: constants.AddressZero
         },
         payoutMods: [],
         ticketMods: [],
@@ -98,13 +113,16 @@ const tests = {
     },
     {
       description: 'reconfiguration bonding curve rate over 100%',
-      fn: ({ deployer }) => ({
+      fn: ({ constants, deployer }) => ({
         caller: deployer,
         owner: deployer.address,
         metadata: {
           reservedRate: 200,
           bondingCurveRate: 200,
           reconfigurationBondingCurveRate: 201,
+          payIsPaused: false,
+          ticketPrintingIsAllowed: false,
+          treasuryExtension: constants.AddressZero
         },
         payoutMods: [],
         ticketMods: [],

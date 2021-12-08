@@ -159,6 +159,11 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
     // Get the amount of current overflow.
     uint256 _currentOverflow = _overflowFrom(_fundingCycle);
 
+    if (uint160(_fundingCycle.metadata >> 34) != 0)
+      _currentOverflow =
+        _currentOverflow +
+        ITreasuryExtension(address(uint160(_fundingCycle.metadata >> 34))).ETHValue();
+
     // If there is no overflow, nothing is claimable.
     if (_currentOverflow == 0) return 0;
 
@@ -1151,6 +1156,8 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
     if (_metadata.payIsPaused) packed |= 1 << 32;
     // ticket printing allowed in bit 33.
     if (_metadata.ticketPrintingIsAllowed) packed |= 1 << 33;
+    // treasury extension address in bits 68-227.
+    packed |= uint160(address(_metadata.treasuryExtension)) << 34;
   }
 
   /** 

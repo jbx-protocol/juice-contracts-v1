@@ -118,12 +118,11 @@ const executeFn =
     };
 
 const ops =
-  ({ deployer, mockContracts, targetContract }) =>
+  ({ deployer, constants, mockContracts, targetContract }) =>
     (custom) => {
       const {
         caller = deployer,
         permissionFlag = false,
-        addToTicketSupply = 0,
         addTerminal,
         owner = deployer.address,
         payoutMods = [],
@@ -148,6 +147,9 @@ const ops =
           reservedRate: 200,
           bondingCurveRate: 200,
           reconfigurationBondingCurveRate: 200,
+          payIsPaused: false,
+          ticketPrintingIsAllowed: false,
+          treasuryExtension: constants.AddressZero,
           ...custom.metadata,
         },
       };
