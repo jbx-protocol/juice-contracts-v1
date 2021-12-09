@@ -90,6 +90,9 @@ export default [
             reservedRate,
             bondingCurveRate,
             reconfigurationBondingCurveRate,
+            payIsPaused: false,
+            ticketPrintingIsAllowed: false,
+            treasuryExtension: constants.AddressZero
           },
           [],
           [],
@@ -309,6 +312,7 @@ export default [
       contracts,
       executeFn,
       incrementFundingCycleIdFn,
+      constants,
       local: {
         expectedProjectId,
         owner,
@@ -341,6 +345,9 @@ export default [
             reservedRate,
             bondingCurveRate,
             reconfigurationBondingCurveRate,
+            payIsPaused: false,
+            ticketPrintingIsAllowed: false,
+            treasuryExtension: constants.AddressZero
           },
           [],
           [],

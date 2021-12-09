@@ -56,7 +56,9 @@ export default [
             reservedRate: BigNumber.from(200),
             bondingCurveRate: BigNumber.from(200),
             reconfigurationBondingCurveRate: BigNumber.from(200),
-            payIsPaused: true
+            payIsPaused: true,
+            ticketPrintingIsAllowed: false,
+            treasuryExtension: constants.AddressZero
           },
           [],
           [],
@@ -132,7 +134,9 @@ export default [
             reservedRate: BigNumber.from(200),
             bondingCurveRate: BigNumber.from(200),
             reconfigurationBondingCurveRate: BigNumber.from(200),
-            payIsPaused: false
+            payIsPaused: false,
+            ticketPrintingIsAllowed: false,
+            treasuryExtension: constants.AddressZero
           },
           [],
           [],

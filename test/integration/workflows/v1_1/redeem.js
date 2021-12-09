@@ -118,6 +118,9 @@ export default [
             reservedRate,
             bondingCurveRate,
             reconfigurationBondingCurveRate,
+            payIsPaused: false,
+            ticketPrintingIsAllowed: false,
+            treasuryExtension: constants.AddressZero
           },
           [],
           [],
@@ -381,7 +384,8 @@ export default [
           redeemableAmountOfTicketBeneficiary1,
           redeemBeneficiary1,
           randomBoolFn(),
-        ]
+        ],
+        revert: redeemableTicketsOfTicketBeneficiary1.eq(0) && "TerminalV1_1::redeem: NO_OP"
       });
 
       return {
@@ -515,6 +519,9 @@ export default [
             reconfigurationBondingCurveRate: randomBigNumberFn({
               max: constants.MaxPercent,
             }),
+            payIsPaused: false,
+            ticketPrintingIsAllowed: false,
+            treasuryExtension: constants.AddressZero
           },
           [],
           [],
@@ -619,7 +626,8 @@ export default [
           redeemableAmountOfTicketBeneficiary2,
           redeemBeneficiary2,
           randomBoolFn(),
-        ]
+        ],
+        revert: redeemableTicketsOfTicketBeneficiary2.eq(0) && "TerminalV1_1::redeem: NO_OP"
       });
 
       return {

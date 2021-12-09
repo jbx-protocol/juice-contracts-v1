@@ -157,15 +157,15 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
     if (_fundingCycle.id == 0) return 0;
 
     // Get the amount of current overflow.
-    uint256 _currentOverflow = _overflowFrom(_fundingCycle);
+    uint256 _redeemableOverflow = _overflowFrom(_fundingCycle);
 
     if (uint160(_fundingCycle.metadata >> 34) != 0)
-      _currentOverflow =
-        _currentOverflow +
+      _redeemableOverflow =
+        _redeemableOverflow +
         ITreasuryExtension(address(uint160(_fundingCycle.metadata >> 34))).ETHValue();
 
-    // If there is no overflow, nothing is claimable.
-    if (_currentOverflow == 0) return 0;
+    // If there is no redeemable overflow, nothing is claimable.
+    if (_redeemableOverflow == 0) return 0;
 
     // Get the total number of tickets in circulation.
     uint256 _totalSupply = ticketBooth.totalSupplyOf(_projectId);
@@ -182,10 +182,10 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
     if (_reservedTicketAmount > 0) _totalSupply = _totalSupply + _reservedTicketAmount;
 
     // If the amount being redeemed is the the total supply, return the rest of the overflow.
-    if (_count == _totalSupply) return _currentOverflow;
+    if (_count == _totalSupply) return _redeemableOverflow;
 
     // Get a reference to the linear proportion.
-    uint256 _base = PRBMath.mulDiv(_currentOverflow, _count, _totalSupply);
+    uint256 _base = PRBMath.mulDiv(_redeemableOverflow, _count, _totalSupply);
 
     // Use the reconfiguration bonding curve if the queued cycle is pending approval according to the previous funding cycle's ballot.
     uint256 _bondingCurveRate = fundingCycles.currentBallotStateOf(_projectId) == BallotState.Active // The reconfiguration bonding curve rate is stored in bytes 24-31 of the metadata property.

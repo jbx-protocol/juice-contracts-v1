@@ -265,6 +265,7 @@ export default [
             reconfigurationBondingCurveRate: randomBigNumberFn({
               max: constants.MaxPercent,
             }),
+
           },
           [],
           [],
@@ -444,9 +445,9 @@ export default [
         expect: projectMod.preferUnstaked
           ? BigNumber.from(0)
           : expectedAmountTapped
-              .mul(projectMod.percent)
-              .div(constants.MaxModPercent)
-              .mul(constants.InitialWeightMultiplier),
+            .mul(projectMod.percent)
+            .div(constants.MaxModPercent)
+            .mul(constants.InitialWeightMultiplier),
       }),
   },
   {

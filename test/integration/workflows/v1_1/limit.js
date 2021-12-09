@@ -84,6 +84,9 @@ export default [
             reservedRate: reservedRate1,
             bondingCurveRate: bondingCurveRate1,
             reconfigurationBondingCurveRate: reconfigurationBondingCurveRate1,
+            payIsPaused: false,
+            ticketPrintingIsAllowed: false,
+            treasuryExtension: constants.AddressZero
           },
           [],
           [],
@@ -406,6 +409,9 @@ export default [
             reservedRate: reservedRate2,
             bondingCurveRate: bondingCurveRate2,
             reconfigurationBondingCurveRate: reconfigurationBondingCurveRate2,
+            payIsPaused: false,
+            ticketPrintingIsAllowed: false,
+            treasuryExtension: constants.AddressZero
           },
           [],
           [],

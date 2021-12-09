@@ -275,7 +275,9 @@ export default [
             reconfigurationBondingCurveRate: randomBigNumberFn({
               max: constants.MaxPercent,
             }),
-            ticketPrintingIsAllowed: true
+            payIsPaused: false,
+            ticketPrintingIsAllowed: true,
+            treasuryExtension: constants.AddressZero
           },
           [],
           [],
@@ -528,7 +530,9 @@ export default [
             reconfigurationBondingCurveRate: randomBigNumberFn({
               max: constants.MaxPercent,
             }),
-            ticketPrintingIsAllowed: false
+            payIsPaused: false,
+            ticketPrintingIsAllowed: false,
+            treasuryExtension: constants.AddressZero
           },
           [],
           [],

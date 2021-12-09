@@ -24,6 +24,9 @@ const operations = [
           reservedRate: BigNumber.from(201),
           bondingCurveRate: BigNumber.from(1),
           reconfigurationBondingCurveRate: BigNumber.from(1),
+          payIsPaused: false,
+          ticketPrintingIsAllowed: false,
+          treasuryExtension: constants.AddressZero
         },
         [],
         [],

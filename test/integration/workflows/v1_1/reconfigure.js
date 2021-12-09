@@ -85,6 +85,9 @@ export default [
             reservedRate: reservedRate1,
             bondingCurveRate: bondingCurveRate1,
             reconfigurationBondingCurveRate: reconfigurationBondingCurveRate1,
+            payIsPaused: false,
+            ticketPrintingIsAllowed: true,
+            treasuryExtension: constants.AddressZero
           },
           [],
           [],
@@ -132,6 +135,10 @@ export default [
     }) => {
       // Pack the metadata as expected.
       let expectedPackedMetadata1 = BigNumber.from(0);
+      expectedPackedMetadata1 = expectedPackedMetadata1.add(1);
+      expectedPackedMetadata1 = expectedPackedMetadata1.shl(1);
+      expectedPackedMetadata1 = expectedPackedMetadata1.add(0);
+      expectedPackedMetadata1 = expectedPackedMetadata1.shl(8);
       expectedPackedMetadata1 = expectedPackedMetadata1.add(reconfigurationBondingCurveRate1);
       expectedPackedMetadata1 = expectedPackedMetadata1.shl(8);
       expectedPackedMetadata1 = expectedPackedMetadata1.add(bondingCurveRate1);
@@ -337,6 +344,9 @@ export default [
             reservedRate: reservedRate2,
             bondingCurveRate: bondingCurveRate2,
             reconfigurationBondingCurveRate: reconfigurationBondingCurveRate2,
+            payIsPaused: false,
+            ticketPrintingIsAllowed: true,
+            treasuryExtension: constants.AddressZero
           },
           [],
           [],
@@ -358,17 +368,13 @@ export default [
   },
   {
     description: 'Make sure the first funding cycle did not get updated',
-    fn: async ({
+    fn: ({
       contracts,
       checkFn,
       BigNumber,
-      timeMark,
       randomSignerFn,
       local: {
         originalTimeMark,
-        reconfigurationBondingCurveRate2,
-        bondingCurveRate2,
-        reservedRate2,
         expectedFundingCycleId1,
         expectedFundingCycleNumber1,
         expectedProjectId,
@@ -382,16 +388,9 @@ export default [
         discountRate1,
         expectedPackedMetadata1
       },
-    }) => {
-      let expectedPackedMetadata2 = BigNumber.from(0);
-      expectedPackedMetadata2 = expectedPackedMetadata2.add(reconfigurationBondingCurveRate2);
-      expectedPackedMetadata2 = expectedPackedMetadata2.shl(8);
-      expectedPackedMetadata2 = expectedPackedMetadata2.add(bondingCurveRate2);
-      expectedPackedMetadata2 = expectedPackedMetadata2.shl(8);
-      expectedPackedMetadata2 = expectedPackedMetadata2.add(reservedRate2);
-      expectedPackedMetadata2 = expectedPackedMetadata2.shl(8);
+    }) =>
 
-      await checkFn({
+      checkFn({
         caller: randomSignerFn(),
         contract: contracts.fundingCycles,
         fn: 'get',
@@ -415,10 +414,7 @@ export default [
           expectedInitialTapped,
           expectedPackedMetadata1,
         ],
-      });
-
-      return { expectedPackedMetadata2 };
-    },
+      })
   },
   {
     description: 'Print some premined tickets',
@@ -455,6 +451,7 @@ export default [
     fn: ({
       contracts,
       executeFn,
+      constants,
       local: {
         owner,
         target1,
@@ -486,6 +483,9 @@ export default [
             reservedRate: reservedRate1,
             bondingCurveRate: bondingCurveRate1,
             reconfigurationBondingCurveRate: reconfigurationBondingCurveRate1,
+            payIsPaused: false,
+            ticketPrintingIsAllowed: true,
+            treasuryExtension: constants.AddressZero
           },
           [],
           [],
@@ -583,7 +583,7 @@ export default [
     fn: async ({
       contracts,
       executeFn,
-      incrementFundingCycleIdFn,
+      constants,
       BigNumber,
       local: {
         owner,
@@ -621,6 +621,9 @@ export default [
             reservedRate: reservedRate2,
             bondingCurveRate: bondingCurveRate2,
             reconfigurationBondingCurveRate: reconfigurationBondingCurveRate2,
+            payIsPaused: false,
+            ticketPrintingIsAllowed: true,
+            treasuryExtension: constants.AddressZero
           },
           [],
           [],
@@ -631,7 +634,7 @@ export default [
   },
   {
     description: 'The second funding cycle should have been configured',
-    fn: ({
+    fn: async ({
       constants,
       contracts,
       checkFn,
@@ -643,12 +646,14 @@ export default [
         duration1,
         originalTimeMark,
         cycleLimit2,
+        reconfigurationBondingCurveRate2,
+        bondingCurveRate2,
+        reservedRate2,
         ballot2,
         duration2,
         target2,
         currency2,
         discountRate2,
-        expectedPackedMetadata2,
         expectedProjectId,
         expectedFundingCycleId1,
         expectedFundingCycleId2,
@@ -657,8 +662,21 @@ export default [
         expectedFee,
         expectedInitialTapped,
       },
-    }) =>
-      checkFn({
+    }) => {
+
+      let expectedPackedMetadata2 = BigNumber.from(0);
+      expectedPackedMetadata2 = expectedPackedMetadata2.add(1);
+      expectedPackedMetadata2 = expectedPackedMetadata2.shl(1);
+      expectedPackedMetadata2 = expectedPackedMetadata2.add(0);
+      expectedPackedMetadata2 = expectedPackedMetadata2.shl(8);
+      expectedPackedMetadata2 = expectedPackedMetadata2.add(reconfigurationBondingCurveRate2);
+      expectedPackedMetadata2 = expectedPackedMetadata2.shl(8);
+      expectedPackedMetadata2 = expectedPackedMetadata2.add(bondingCurveRate2);
+      expectedPackedMetadata2 = expectedPackedMetadata2.shl(8);
+      expectedPackedMetadata2 = expectedPackedMetadata2.add(reservedRate2);
+      expectedPackedMetadata2 = expectedPackedMetadata2.shl(8);
+
+      await checkFn({
         caller: randomSignerFn(),
         contract: contracts.fundingCycles,
         fn: 'get',
@@ -684,7 +702,10 @@ export default [
           expectedInitialTapped,
           expectedPackedMetadata2,
         ],
-      }),
+      });
+
+      return { expectedPackedMetadata2 }
+    }
   },
   {
     description: 'The first funding cycle should not have been configured',

@@ -76,6 +76,9 @@ export default [
             reservedRate,
             bondingCurveRate,
             reconfigurationBondingCurveRate,
+            payIsPaused: false,
+            ticketPrintingIsAllowed: false,
+            treasuryExtension: constants.AddressZero
           },
           payoutMods,
           ticketMods,

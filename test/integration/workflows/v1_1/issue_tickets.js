@@ -84,6 +84,9 @@ export default [
             reconfigurationBondingCurveRate: randomBigNumberFn({
               max: constants.MaxPercent,
             }),
+            payIsPaused: false,
+            ticketPrintingIsAllowed: false,
+            treasuryExtension: constants.AddressZero
           },
           [],
           [],
@@ -397,13 +400,6 @@ export default [
             max: expectedUnstakedBalance.sub(1),
           }),
         );
-
-      // Find how much the subset is redeemable for.
-      const claimableAmount = await contracts.terminalV1_1.claimableOverflowOf(
-        ticketBeneficiary.address,
-        expectedProjectId,
-        redeemedPortionOfUnstakedBalance,
-      );
 
       const expectNoOp = redeemedPortionOfUnstakedBalance.eq(0);
 

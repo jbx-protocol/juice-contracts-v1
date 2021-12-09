@@ -40,7 +40,7 @@ export default function () {
   describe('ProxyPaymentAddressManager', proxyPaymentAddressManager);
   // Depends on everything.
   describe('TerminalV1', terminalV1);
-  describe.only('TerminalV1_1', terminalV1_1);
+  describe('TerminalV1_1', terminalV1_1);
 
   // After each test, restore the contract state.
   afterEach(async function () {
