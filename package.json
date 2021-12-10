@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/jbx-protocol/juice-contracts-v1/"
   },
-  "version": "0.0.1",
+  "version": "1.1.1",
   "license": "MIT",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
@@ -48,7 +48,7 @@
     "test": "mocha -r esm --bail --timeout 6000",
     "test:unit": "mocha -r esm --grep \"Unit\" --bail",
     "test:integration": "mocha -r esm --grep \"Integration\" --bail",
-    "test:integration-exhaustive": "INTEGRATION_TEST_COUNT=2000 mocha -r esm --grep \"Integration\"",
+    "test:integration-exhaustive": "INTEGRATION_TEST_COUNT=500 mocha -r esm --grep \"Integration\"",
     "clean": "rimraf ./cache && rimraf ./artifacts",
     "compile": "yarn clean && hardhat compile",
     "pretty": "prettier --write \"./**/*.{js,jsx,json}\""
