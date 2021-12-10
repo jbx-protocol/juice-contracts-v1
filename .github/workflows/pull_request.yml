@@ -52,3 +52,6 @@ jobs:
       # Run unit tests.
       - name: Run unit tests
         run: yarn test:unit
+      # Run integration tests.
+      - name: Run integration tests
+        run: yarn test:integration        
