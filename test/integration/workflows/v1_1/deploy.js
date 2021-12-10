@@ -132,6 +132,7 @@ export default [
       expectedPackedMetadata = expectedPackedMetadata.shl(8);
       expectedPackedMetadata = expectedPackedMetadata.add(reservedRate);
       expectedPackedMetadata = expectedPackedMetadata.shl(8);
+      expectedPackedMetadata = expectedPackedMetadata.add(1);
 
       // Expect nothing to have been tapped yet from the funding cycle.
       const expectedTapped = BigNumber.from(0);

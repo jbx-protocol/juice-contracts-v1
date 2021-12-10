@@ -219,6 +219,7 @@ const ops =
                 packedMetadata = packedMetadata.shl(8);
                 packedMetadata = packedMetadata.add(metadata.reservedRate);
                 packedMetadata = packedMetadata.shl(8);
+                packedMetadata = packedMetadata.add(1);
                 return [projectId, properties, packedMetadata, 10, false];
               },
               returns: [

@@ -150,6 +150,7 @@ export default [
       expectedPackedMetadata = expectedPackedMetadata.shl(8);
       expectedPackedMetadata = expectedPackedMetadata.add(reservedRate);
       expectedPackedMetadata = expectedPackedMetadata.shl(8);
+      expectedPackedMetadata = expectedPackedMetadata.add(1);
 
       // Expect the funding cycle to be based on the 0th funding cycle.
       const expectedBasedOn = BigNumber.from(0);

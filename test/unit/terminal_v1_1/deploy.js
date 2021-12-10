@@ -158,6 +158,7 @@ export default function () {
         packedMetadata = packedMetadata.shl(8);
         packedMetadata = packedMetadata.add(metadata.reservedRate);
         packedMetadata = packedMetadata.shl(8);
+        packedMetadata = packedMetadata.add(1);
 
         // Set a mock for creating a project.
         await this.mockContracts.projects.mock.create

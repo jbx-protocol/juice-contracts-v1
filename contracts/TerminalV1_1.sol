@@ -132,18 +132,19 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
 
       @dev The _account must have at least _count tickets for the specified project.
       @dev If there is a funding cycle reconfiguration ballot open for the project, the project's current bonding curve is bypassed.
+      @dev No more than the overflow can be claimable.
 
       @param _account The address to get an amount for.
       @param _projectId The ID of the project to get a claimable amount for.
       @param _count The number of Tickets that would be redeemed to get the resulting amount.
 
-      @return amount The amount of tokens that can be claimed.
+      @return _claimableOverflow amount The amount of tokens that can be claimed.
     */
   function claimableOverflowOf(
     address _account,
     uint256 _projectId,
     uint256 _count
-  ) public view override returns (uint256) {
+  ) public view override returns (uint256 _claimableOverflow) {
     // The holder must have the specified number of the project's tickets.
     require(
       ticketBooth.balanceOf(_account, _projectId) >= _count,
@@ -154,18 +155,23 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
     FundingCycle memory _fundingCycle = fundingCycles.currentOf(_projectId);
 
     // There's no overflow if there's no funding cycle.
-    if (_fundingCycle.id == 0) return 0;
+    if (_fundingCycle.number == 0) return 0;
 
     // Get the amount of current overflow.
-    uint256 _redeemableOverflow = _overflowFrom(_fundingCycle);
+    uint256 _overflow = _overflowFrom(_fundingCycle);
 
-    if (uint160(_fundingCycle.metadata >> 34) != 0)
-      _redeemableOverflow =
-        _redeemableOverflow +
-        ITreasuryExtension(address(uint160(_fundingCycle.metadata >> 34))).ETHValue();
+    // The redeemable amount is the current overflow.
+    _claimableOverflow = _overflow;
 
-    // If there is no redeemable overflow, nothing is claimable.
-    if (_redeemableOverflow == 0) return 0;
+    // Add any amount from the funding cycle's treasury extension if there is one.
+    if (uint160(_fundingCycle.metadata >> 34) > 0)
+      _claimableOverflow =
+        _claimableOverflow +
+        ITreasuryExtension(address(uint160(_fundingCycle.metadata >> 34))).ETHValue(_projectId);
+
+    if (_claimableOverflow == 0)
+      // If there is no redeemable overflow, nothing is claimable.
+      return 0;
 
     // Get the total number of tickets in circulation.
     uint256 _totalSupply = ticketBooth.totalSupplyOf(_projectId);
@@ -182,10 +188,12 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
     if (_reservedTicketAmount > 0) _totalSupply = _totalSupply + _reservedTicketAmount;
 
     // If the amount being redeemed is the the total supply, return the rest of the overflow.
-    if (_count == _totalSupply) return _redeemableOverflow;
+    if (_count == _totalSupply)
+      // Only return up to the overflow amount.
+      return _claimableOverflow > _overflow ? _overflow : _claimableOverflow;
 
     // Get a reference to the linear proportion.
-    uint256 _base = PRBMath.mulDiv(_redeemableOverflow, _count, _totalSupply);
+    uint256 _base = PRBMath.mulDiv(_claimableOverflow, _count, _totalSupply);
 
     // Use the reconfiguration bonding curve if the queued cycle is pending approval according to the previous funding cycle's ballot.
     uint256 _bondingCurveRate = fundingCycles.currentBallotStateOf(_projectId) == BallotState.Active // The reconfiguration bonding curve rate is stored in bytes 24-31 of the metadata property.
@@ -197,14 +205,20 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
     // where x is _count, o is _currentOverflow, s is _totalSupply, and r is _bondingCurveRate.
 
     // These conditions are all part of the same curve. Edge conditions are separated because fewer operation are necessary.
-    if (_bondingCurveRate == 200) return _base;
-    if (_bondingCurveRate == 0) return PRBMath.mulDiv(_base, _count, _totalSupply);
-    return
-      PRBMath.mulDiv(
+    if (_bondingCurveRate == 200) {
+      _claimableOverflow = _base;
+    } else if (_bondingCurveRate == 0) {
+      _claimableOverflow = PRBMath.mulDiv(_base, _count, _totalSupply);
+    } else {
+      _claimableOverflow = PRBMath.mulDiv(
         _base,
         _bondingCurveRate + PRBMath.mulDiv(_count, 200 - _bondingCurveRate, _totalSupply),
         200
       );
+    }
+
+    // Only return up to the overflow amount.
+    if (_claimableOverflow > _overflow) return _overflow;
   }
 
   // --- external transactions --- //
@@ -1144,8 +1158,8 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
       'TerminalV1_1::_validateAndPackFundingCycleMetadata: BAD_RECONFIGURATION_BONDING_CURVE_RATE'
     );
 
-    // version 0 in the first 8 bits.
-    packed = 0;
+    // version 1 in the first 8 bits.
+    packed = 1;
     // reserved rate in bits 8-15.
     packed |= _metadata.reservedRate << 8;
     // bonding curve in bits 16-23.
@@ -1156,8 +1170,8 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
     if (_metadata.payIsPaused) packed |= 1 << 32;
     // ticket printing allowed in bit 33.
     if (_metadata.ticketPrintingIsAllowed) packed |= 1 << 33;
-    // treasury extension address in bits 68-227.
-    packed |= uint160(address(_metadata.treasuryExtension)) << 34;
+    // treasury extension address in bits 34-193.
+    packed |= uint256(uint160(address(_metadata.treasuryExtension))) << 34;
   }
 
   /** 

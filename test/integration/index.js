@@ -36,6 +36,7 @@ import {
   deploy as _deploy_v1_1,
   ticketLockingAndTransfers as _ticketLockingAndTransfers_v1_1,
   redeem as _redeem_v1_1,
+  redeemWithTreasuryExtension as _redeem_with_treasury_extension_v1_1,
   printReservedTickets as _printReservedTickets_v1_1,
   printTickets as _printTickets_v1_1,
   issueTickets as _issueTickets_v1_1,
@@ -298,7 +299,7 @@ export default function () {
     );
   }
 
-  for (let i = 0; i < 5; i += 1) {
+  for (let i = 0; i < 100; i += 1) {
     describe(
       'Projects can be created, have their URIs changed, transfer/claim handles, and be attached to funding cycles',
       run(_projects_v1_1),
@@ -313,6 +314,7 @@ export default function () {
       run(_ticketLockingAndTransfers_v1_1),
     );
     describe('Redeem tickets for overflow', run(_redeem_v1_1));
+    describe('Redeem tickets for overflow with a treasury extension attached', run(_redeem_with_treasury_extension_v1_1));
     describe('Prints reserved tickets', run(_printReservedTickets_v1_1));
     describe(
       'Projects can print tickets',
@@ -359,7 +361,7 @@ export default function () {
       run(_pausePayments_v1_1),
     );
   }
-  for (let i = 0; i < 0; i += 1) {
+  for (let i = 0; i < 100; i += 1) {
     describe('Migrate from V1 Terminal to a V1_1 terminal', run(_migrate_v1_to_v1_1));
   }
 

@@ -292,6 +292,7 @@ export default [
       expectedPackedMetadata2 = expectedPackedMetadata2.shl(8);
       expectedPackedMetadata2 = expectedPackedMetadata2.add(reservedRate2);
       expectedPackedMetadata2 = expectedPackedMetadata2.shl(8);
+      expectedPackedMetadata2 = expectedPackedMetadata2.add(1);
 
       // Expect the funding cycle's weight to be the base weight.
       const expectedInititalWeight = await contracts.fundingCycles.BASE_WEIGHT();
@@ -390,6 +391,7 @@ export default [
       expectedPackedMetadata1 = expectedPackedMetadata1.shl(8);
       expectedPackedMetadata1 = expectedPackedMetadata1.add(reservedRate1);
       expectedPackedMetadata1 = expectedPackedMetadata1.shl(8);
+      expectedPackedMetadata1 = expectedPackedMetadata1.add(1);
 
       await checkFn({
         caller: randomSignerFn(),

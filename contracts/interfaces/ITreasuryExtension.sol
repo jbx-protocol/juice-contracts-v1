@@ -2,5 +2,5 @@
 pragma solidity 0.8.6;
 
 interface ITreasuryExtension {
-  function ETHValue() external view returns (uint256);
+  function ETHValue(uint256 _projectId) external view returns (uint256);
 }

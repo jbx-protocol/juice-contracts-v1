@@ -5,6 +5,7 @@ import setPayoutMods from './set_payout_mods';
 import setTicketMods from './set_ticket_mods';
 import tap from './tap';
 import redeem from './redeem';
+import redeemWithTreasuryExtension from './redeem_with_treasury_extension';
 import printReservedTickets from './print_reserved_tickets';
 import issueTickets from './issue_tickets';
 import reconfigure from './reconfigure';
@@ -38,6 +39,7 @@ export {
   setTicketMods,
   tap,
   redeem,
+  redeemWithTreasuryExtension,
   printReservedTickets,
   issueTickets,
   reconfigure,

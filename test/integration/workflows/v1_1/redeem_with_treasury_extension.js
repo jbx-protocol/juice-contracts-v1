@@ -92,11 +92,9 @@ export default [
         max: constants.MaxUint16,
       });
 
-      console.log({
-        reservedRate,
-        bondingCurveRate,
-        reconfigurationBondingCurveRate
-      })
+      // Deploy an example treasury extension
+      const treasuryExtension = await deployContractFn('ExampleTreasuryExtension');
+
       await executeFn({
         caller: deployer,
         contract: contracts.terminalV1_1,
@@ -125,7 +123,7 @@ export default [
             reconfigurationBondingCurveRate,
             payIsPaused: false,
             ticketPrintingIsAllowed: false,
-            treasuryExtension: constants.AddressZero
+            treasuryExtension: treasuryExtension.address
           },
           [],
           [],
@@ -152,7 +150,8 @@ export default [
         initialContractBalance: await getBalanceFn(contracts.terminalV1_1.address),
         ballot,
         expectedTotalTicketsFromPayment1,
-        expectedRedeemableTicketsOfTicketBeneficiary1
+        expectedRedeemableTicketsOfTicketBeneficiary1,
+        treasuryExtension
       };
     },
   },
@@ -306,6 +305,7 @@ export default [
         bondingCurveRate,
         expectedTotalTicketsFromPayment1,
         expectedRedeemableTicketsOfTicketBeneficiary1,
+        treasuryExtension
       },
     }) => {
       const expectedTotalTicketsFromPayment2 = paymentValue2.mul(constants.InitialWeightMultiplier);
@@ -322,6 +322,14 @@ export default [
         expectedProjectId,
       );
 
+      const overflow = paymentValue1.add(paymentValue2).add(paymentValue3).sub(target);
+      const expectation = bondingCurveFn({
+        rate: bondingCurveRate,
+        count: expectedRedeemableTicketsOfTicketBeneficiary1,
+        total: expectedTotalTickets,
+        overflow: overflow.add(await treasuryExtension.ETHValue(expectedProjectId)),
+      });
+
       await checkFn({
         caller: randomSignerFn(),
         contract: contracts.terminalV1_1,
@@ -331,12 +339,7 @@ export default [
           expectedProjectId,
           redeemableTicketsOfTicketBeneficiary1,
         ],
-        expect: bondingCurveFn({
-          rate: bondingCurveRate,
-          count: expectedRedeemableTicketsOfTicketBeneficiary1,
-          total: expectedTotalTickets,
-          overflow: paymentValue1.add(paymentValue2).add(paymentValue3).sub(target),
-        }),
+        expect: overflow.gt(expectation) ? expectation : overflow,
         // Allow some wiggle room due to possible division precision errors.
         plusMinus: {
           amount: 100,
@@ -377,7 +380,6 @@ export default [
         redeemableTicketsOfTicketBeneficiary1,
       );
 
-      console.log({ redeemableTicketsOfTicketBeneficiary1, redeemableAmountOfTicketBeneficiary1 })
       await executeFn({
         caller: ticketBeneficiary1,
         contract: contracts.terminalV1_1,
@@ -491,7 +493,7 @@ export default [
       constants,
       BigNumber,
       incrementFundingCycleIdFn,
-      local: { owner, expectedProjectId },
+      local: { owner, expectedProjectId, treasuryExtension },
     }) => {
       // Burn the unused funding cycle ID ID.
       incrementFundingCycleIdFn();
@@ -526,7 +528,7 @@ export default [
             }),
             payIsPaused: false,
             ticketPrintingIsAllowed: false,
-            treasuryExtension: constants.AddressZero
+            treasuryExtension: treasuryExtension.address
           },
           [],
           [],
@@ -554,6 +556,7 @@ export default [
         redeemableAmountOfTicketBeneficiary1,
         leftoverTicketsOfTicketBeneficiary1,
         expectedTotalTickets,
+        treasuryExtension
       },
     }) => {
       // Get the stored ticket amount.
@@ -561,7 +564,19 @@ export default [
         ticketBeneficiary2.address,
         expectedProjectId,
       );
-
+      const overflow = paymentValue1
+        .add(paymentValue2)
+        .add(paymentValue3)
+        .sub(target)
+        .sub(redeemableAmountOfTicketBeneficiary1);
+      const expectation = bondingCurveFn({
+        rate: reconfigurationBondingCurveRate,
+        count: redeemableTicketsOfTicketBeneficiary2,
+        total: expectedTotalTickets
+          .sub(redeemableTicketsOfTicketBeneficiary1)
+          .add(leftoverTicketsOfTicketBeneficiary1),
+        overflow: overflow.add(await treasuryExtension.ETHValue(expectedProjectId)),
+      });
       await checkFn({
         caller: randomSignerFn(),
         contract: contracts.terminalV1_1,
@@ -571,18 +586,7 @@ export default [
           expectedProjectId,
           redeemableTicketsOfTicketBeneficiary2,
         ],
-        expect: bondingCurveFn({
-          rate: reconfigurationBondingCurveRate,
-          count: redeemableTicketsOfTicketBeneficiary2,
-          total: expectedTotalTickets
-            .sub(redeemableTicketsOfTicketBeneficiary1)
-            .add(leftoverTicketsOfTicketBeneficiary1),
-          overflow: paymentValue1
-            .add(paymentValue2)
-            .add(paymentValue3)
-            .sub(target)
-            .sub(redeemableAmountOfTicketBeneficiary1),
-        }),
+        expect: overflow.gt(expectation) ? expectation : overflow,
         // Allow some wiggle room due to possible division precision errors.
         plusMinus: {
           amount: 100,
@@ -753,6 +757,7 @@ export default [
         leftoverTicketsOfTicketBeneficiary1,
         leftoverTicketsOfTicketBeneficiary2,
         expectedTotalTickets,
+        treasuryExtension
       },
     }) => {
       // Get the stored ticket amount.
@@ -760,7 +765,22 @@ export default [
         ticketBeneficiary3.address,
         expectedProjectId,
       );
-
+      const overflow = paymentValue1
+        .add(paymentValue2)
+        .add(paymentValue3)
+        .sub(target)
+        .sub(redeemableAmountOfTicketBeneficiary1)
+        .sub(redeemableAmountOfTicketBeneficiary2);
+      const expectation = bondingCurveFn({
+        rate: bondingCurveRate,
+        count: redeemableTicketsOfTicketBeneficiary3,
+        total: expectedTotalTickets
+          .sub(redeemableTicketsOfTicketBeneficiary1)
+          .add(leftoverTicketsOfTicketBeneficiary1)
+          .sub(redeemableTicketsOfTicketBeneficiary2)
+          .add(leftoverTicketsOfTicketBeneficiary2),
+        overflow: overflow.add(await treasuryExtension.ETHValue(expectedProjectId)),
+      })
       await checkFn({
         caller: randomSignerFn(),
         contract: contracts.terminalV1_1,
@@ -770,21 +790,7 @@ export default [
           expectedProjectId,
           redeemableTicketsOfTicketBeneficiary3,
         ],
-        expect: bondingCurveFn({
-          rate: bondingCurveRate,
-          count: redeemableTicketsOfTicketBeneficiary3,
-          total: expectedTotalTickets
-            .sub(redeemableTicketsOfTicketBeneficiary1)
-            .add(leftoverTicketsOfTicketBeneficiary1)
-            .sub(redeemableTicketsOfTicketBeneficiary2)
-            .add(leftoverTicketsOfTicketBeneficiary2),
-          overflow: paymentValue1
-            .add(paymentValue2)
-            .add(paymentValue3)
-            .sub(target)
-            .sub(redeemableAmountOfTicketBeneficiary1)
-            .sub(redeemableAmountOfTicketBeneficiary2),
-        }),
+        expect: overflow.gt(expectation) ? expectation : overflow,
         // Allow some wiggle room due to possible division precision errors.
         plusMinus: {
           amount: 100,
@@ -834,7 +840,7 @@ export default [
           redeemBeneficiary3,
           randomBoolFn(),
         ],
-        revert: redeemableTicketsOfTicketBeneficiary3.eq(0) && "TerminalV1_1::redeem: NO_OP"
+        revert: redeemableTicketsOfTicketBeneficiary3.eq(0) && 'TerminalV1_1::redeem: NO_OP'
       });
 
       return {
