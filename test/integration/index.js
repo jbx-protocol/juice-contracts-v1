@@ -241,7 +241,6 @@ export default function () {
     };
   });
 
-
   let iterations = process.env.INTEGRATION_TEST_COUNT || 10;
   for (let i = 0; i < iterations; i += 1) {
     describe(
@@ -301,7 +300,7 @@ export default function () {
     );
   }
 
-  for (let i = 0; i < 100; i += 1) {
+  for (let i = 0; i < iterations; i += 1) {
     describe(
       'Projects can be created, have their URIs changed, transfer/claim handles, and be attached to funding cycles',
       run(_projects_v1_1),
@@ -363,7 +362,7 @@ export default function () {
       run(_pausePayments_v1_1),
     );
   }
-  for (let i = 0; i < 100; i += 1) {
+  for (let i = 0; i < iterations; i += 1) {
     describe('Migrate from V1 Terminal to a V1_1 terminal', run(_migrate_v1_to_v1_1));
   }
 
