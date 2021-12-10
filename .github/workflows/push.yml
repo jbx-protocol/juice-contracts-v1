@@ -1,4 +1,4 @@
-name: juice-contracts-v1-exhaustive-integration-test
+name: exhaustive-integration-tests
 on:
   push:
     branches:
