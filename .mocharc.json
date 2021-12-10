@@ -1,4 +1,4 @@
 {
-  "bail": false,
+  "bail": true,
   "timeout": 0
 }
