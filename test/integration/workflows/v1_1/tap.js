@@ -108,7 +108,7 @@ export default [
 
       await executeFn({
         caller: randomSignerFn(),
-        contract: contracts.terminalV1,
+        contract: contracts.terminalV1_1,
         fn: 'deploy',
         args: [
           owner.address,
@@ -139,6 +139,9 @@ export default [
             reconfigurationBondingCurveRate: randomBigNumberFn({
               max: constants.MaxPercent,
             }),
+            payIsPaused: false,
+            ticketPrintingIsAllowed: false,
+            treasuryExtension: constants.AddressZero
           },
           [addressMod, projectMod, allocatorMod],
           [],
@@ -234,7 +237,7 @@ export default [
 
       await executeFn({
         caller: randomSignerFn(),
-        contract: contracts.terminalV1,
+        contract: contracts.terminalV1_1,
         fn: 'deploy',
         args: [
           modProjectOwner.address,
@@ -265,6 +268,9 @@ export default [
             reconfigurationBondingCurveRate: randomBigNumberFn({
               max: constants.MaxPercent,
             }),
+            payIsPaused: false,
+            ticketPrintingIsAllowed: false,
+            treasuryExtension: constants.AddressZero
           },
           [],
           [],
@@ -305,7 +311,7 @@ export default [
     }) =>
       executeFn({
         caller: payer,
-        contract: contracts.terminalV1,
+        contract: contracts.terminalV1_1,
         fn: 'pay',
         args: [expectedIdOfBaseProject, randomAddressFn(), randomStringFn(), randomBoolFn()],
         value: paymentValue1,
@@ -316,7 +322,7 @@ export default [
     fn: ({ contracts, checkFn, BigNumber, randomSignerFn, local: { expectedIdOfModProject } }) =>
       checkFn({
         caller: randomSignerFn(),
-        contract: contracts.terminalV1,
+        contract: contracts.terminalV1_1,
         fn: 'balanceOf',
         args: [expectedIdOfModProject],
         expect: BigNumber.from(0),
@@ -352,7 +358,7 @@ export default [
         caller: randomSignerFn({
           exclude: [addressMod.beneficiary, owner.address],
         }),
-        contract: contracts.terminalV1,
+        contract: contracts.terminalV1_1,
         fn: 'tap',
         args: [expectedIdOfBaseProject, amountToTap, currency, amountToTap],
       });
@@ -377,7 +383,7 @@ export default [
       // The amount tapped takes into account any fees paid.
       const expectedAmountTapped = amountToTap
         .mul(constants.MaxPercent)
-        .div((await contracts.terminalV1.fee()).add(constants.MaxPercent));
+        .div((await contracts.terminalV1_1.fee()).add(constants.MaxPercent));
 
       await verifyBalanceFn({
         address: addressMod.beneficiary,
@@ -400,7 +406,7 @@ export default [
     }) =>
       checkFn({
         caller: randomSignerFn(),
-        contract: contracts.terminalV1,
+        contract: contracts.terminalV1_1,
         fn: 'balanceOf',
         args: [expectedIdOfModProject],
         expect: expectedAmountTapped.mul(projectMod.percent).div(constants.MaxModPercent),
@@ -444,9 +450,9 @@ export default [
         expect: projectMod.preferUnstaked
           ? BigNumber.from(0)
           : expectedAmountTapped
-              .mul(projectMod.percent)
-              .div(constants.MaxModPercent)
-              .mul(constants.InitialWeightMultiplier),
+            .mul(projectMod.percent)
+            .div(constants.MaxModPercent)
+            .mul(constants.InitialWeightMultiplier),
       }),
   },
   {
@@ -530,7 +536,7 @@ export default [
       });
       await executeFn({
         caller: payer,
-        contract: contracts.terminalV1,
+        contract: contracts.terminalV1_1,
         fn: 'pay',
         args: [expectedIdOfBaseProject, randomAddressFn(), randomStringFn(), randomBoolFn()],
         value: paymentValue2,
@@ -549,7 +555,7 @@ export default [
     }) =>
       executeFn({
         caller: randomSignerFn(),
-        contract: contracts.terminalV1,
+        contract: contracts.terminalV1_1,
         fn: 'tap',
         args: [expectedIdOfBaseProject, paymentValue2, currency, paymentValue2],
         revert: 'FundingCycles::tap: INSUFFICIENT_FUNDS',
@@ -573,7 +579,7 @@ export default [
 
       await executeFn({
         caller: randomSignerFn(),
-        contract: contracts.terminalV1,
+        contract: contracts.terminalV1_1,
         fn: 'tap',
         args: [expectedIdOfBaseProject, paymentValue2, currency, paymentValue2],
       });

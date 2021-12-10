@@ -10,6 +10,7 @@ import proxyPaymentAddress from './proxy_payment_address';
 import proxyPaymentAddressManager from './proxy_payment_address_manager';
 import terminalDirectory from './terminal_directory';
 import terminalV1 from './terminal_v1';
+import terminalV1_1 from './terminal_v1_1';
 import ticketBooth from './ticket_booth';
 
 let snapshotId;
@@ -39,6 +40,7 @@ export default function () {
   describe('ProxyPaymentAddressManager', proxyPaymentAddressManager);
   // Depends on everything.
   describe('TerminalV1', terminalV1);
+  describe('TerminalV1_1', terminalV1_1);
 
   // After each test, restore the contract state.
   afterEach(async function () {

@@ -10,19 +10,25 @@ import './IProjects.sol';
 import './IModStore.sol';
 import './ITerminal.sol';
 import './IOperatorStore.sol';
+import './ITreasuryExtension.sol';
 
-struct FundingCycleMetadata {
+struct FundingCycleMetadata2 {
   uint256 reservedRate;
   uint256 bondingCurveRate;
   uint256 reconfigurationBondingCurveRate;
+  bool payIsPaused;
+  bool ticketPrintingIsAllowed;
+  ITreasuryExtension treasuryExtension;
 }
 
-interface ITerminalV1 {
+interface ITerminalV1_1 {
   event Pay(
     uint256 indexed fundingCycleId,
     uint256 indexed projectId,
     address indexed beneficiary,
     uint256 amount,
+    uint256 beneficiaryTokens,
+    uint256 totalTokens,
     string note,
     address caller
   );
@@ -82,11 +88,10 @@ interface ITerminalV1 {
 
   event AcceptGovernance(address governance);
 
-  event PrintPreminedTickets(
+  event PrintTickets(
     uint256 indexed projectId,
     address indexed beneficiary,
     uint256 amount,
-    uint256 currency,
     string memo,
     address caller
   );
@@ -120,8 +125,6 @@ interface ITerminalV1 {
     view
     returns (uint256);
 
-  function canPrintPreminedTickets(uint256 _projectId) external view returns (bool);
-
   function balanceOf(uint256 _projectId) external view returns (uint256);
 
   function currentOverflowOf(uint256 _projectId) external view returns (uint256);
@@ -139,7 +142,7 @@ interface ITerminalV1 {
     bytes32 _handle,
     string calldata _uri,
     FundingCycleProperties calldata _properties,
-    FundingCycleMetadata calldata _metadata,
+    FundingCycleMetadata2 calldata _metadata,
     PayoutMod[] memory _payoutMods,
     TicketMod[] memory _ticketMods
   ) external;
@@ -147,15 +150,14 @@ interface ITerminalV1 {
   function configure(
     uint256 _projectId,
     FundingCycleProperties calldata _properties,
-    FundingCycleMetadata calldata _metadata,
+    FundingCycleMetadata2 calldata _metadata,
     PayoutMod[] memory _payoutMods,
     TicketMod[] memory _ticketMods
   ) external returns (uint256);
 
-  function printPreminedTickets(
+  function printTickets(
     uint256 _projectId,
     uint256 _amount,
-    uint256 _currency,
     address _beneficiary,
     string memory _memo,
     bool _preferUnstakedTickets

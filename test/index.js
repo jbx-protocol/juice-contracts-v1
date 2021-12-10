@@ -191,8 +191,16 @@ describe('Juicebox', async function () {
     };
 
     // Bind a function that checks if a contract getter equals an expected value.
-    this.checkFn = async ({ caller, contract, fn, args, expect, plusMinus }) => {
-      const storedVal = await contract.connect(caller)[fn](...args);
+    this.checkFn = async ({ caller, contract, fn, args, expect, plusMinus, revert }) => {
+      // Save the promise that is returned.
+      const promise = contract.connect(caller)[fn](...args);
+
+      // If a revert message is passed in, check to see if it was thrown.
+      if (revert) {
+        await _expect(promise).to.be.revertedWith(revert);
+        return;
+      }
+      const storedVal = await promise;
       if (plusMinus) {
         console.log({
           storedVal,
