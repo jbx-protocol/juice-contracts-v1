@@ -1,4 +1,4 @@
-name: juice-contracts-publish
+name: publish
 on:
   push:
     branches:
