@@ -241,7 +241,9 @@ export default function () {
     };
   });
 
-  for (let i = 0; i < 0; i += 1) {
+
+  let iterations = process.env.INTEGRATION_TEST_COUNT || 10;
+  for (let i = 0; i < iterations; i += 1) {
     describe(
       'Projects can be created, have their URIs changed, transfer/claim handles, and be attached to funding cycles',
       run(_projects_v1),

@@ -1,0 +1,51 @@
+name: juice-contracts-v1-exhaustive-integration-test
+on:
+  push:
+    branches:
+      - main
+jobs:
+  exhaustive-integration-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Restore cached yarn cache
+        uses: actions/cache@v2
+        id: cache-yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Restore cached node_modules
+        id: cache-node-modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./node_modules
+            ./packages/hardhat/node_modules
+          key: ${{ runner.os }}-${{ steps.nvm.outputs.NVMRC }}-nodemodules-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ steps.nvm.outputs.NVMRC }}-nodemodules-
+      - name: Install JS dependencies
+        if: |
+          steps.cache-yarn-cache.outputs.cache-hit != 'true' ||
+          steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile --prefer-offline
+      # Compile smart contracts
+      - name: Compile contracts
+        run: yarn compile
+      # A local blockchain is required in order for tests to run.
+      - name: Start local blockchain
+        run: yarn chain --network hardhat &>/dev/null &
+      # Give the local blockchain time to come up.
+      - name: Sleep
+        run: sleep 60
+      # Run exhaustive integration tests.
+      - name: Run integration tests
+        run: yarn test:integration-exhaustive
