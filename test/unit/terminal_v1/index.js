@@ -15,69 +15,64 @@ import tap from './tap';
 const contractName = 'TerminalV1';
 
 export default function () {
-  // Before the tests, deploy mocked dependencies and the contract.
-  before(async function () {
-    // Deploy mock dependency contracts.
-    const operatorStore = await this.deployMockLocalContractFn('OperatorStore');
-    const projects = await this.deployMockLocalContractFn('Projects', [operatorStore.address]);
-    const prices = await this.deployMockLocalContractFn('Prices');
-    const terminalDirectory = await this.deployMockLocalContractFn('TerminalDirectory', [
-      projects.address,
-      operatorStore.address,
-    ]);
-    const fundingCycles = await this.deployMockLocalContractFn('FundingCycles', [
-      terminalDirectory.address,
-    ]);
-    const ticketBooth = await this.deployMockLocalContractFn('TicketBooth', [
-      projects.address,
-      operatorStore.address,
-      terminalDirectory.address,
-    ]);
-    const modStore = await this.deployMockLocalContractFn('ModStore', [
-      projects.address,
-      operatorStore.address,
-    ]);
+	// Before the tests, deploy mocked dependencies and the contract.
+	before(async function () {
+		// Deploy mock dependency contracts.
+		const operatorStore = await this.deployMockLocalContractFn('OperatorStore');
+		const projects = await this.deployMockLocalContractFn('Projects', [operatorStore.address]);
+		const prices = await this.deployMockLocalContractFn('Prices');
+		const terminalDirectory = await this.deployMockLocalContractFn('TerminalDirectory', [
+			projects.address,
+			operatorStore.address,
+		]);
+		const fundingCycles = await this.deployMockLocalContractFn('FundingCycles', [terminalDirectory.address]);
+		const ticketBooth = await this.deployMockLocalContractFn('TicketBooth', [
+			projects.address,
+			operatorStore.address,
+			terminalDirectory.address,
+		]);
+		const modStore = await this.deployMockLocalContractFn('ModStore', [projects.address, operatorStore.address]);
 
-    const governance = this.addrs[9];
+		const governance = this.addrs[9];
 
-    this.governance = governance;
+		this.governance = governance;
 
-    this.mockContracts = {
-      operatorStore,
-      projects,
-      prices,
-      terminalDirectory,
-      fundingCycles,
-      ticketBooth,
-      modStore,
-    };
+		this.mockContracts = {
+			operatorStore,
+			projects,
+			prices,
+			terminalDirectory,
+			fundingCycles,
+			ticketBooth,
+			modStore,
+		};
 
-    this.targetContract = await this.deployContractFn(contractName, [
-      projects.address,
-      fundingCycles.address,
-      ticketBooth.address,
-      operatorStore.address,
-      modStore.address,
-      prices.address,
-      terminalDirectory.address,
-      governance.address,
-    ]);
+		this.targetContract = await this.deployContractFn(contractName, [
+			projects.address,
+			fundingCycles.address,
+			ticketBooth.address,
+			operatorStore.address,
+			modStore.address,
+			prices.address,
+			terminalDirectory.address,
+			governance.address,
+		]);
 
-    this.contractName = contractName;
-  });
+		this.contractName = contractName;
+	});
 
-  // Test each function.
-  describe('appointGovernance(...)', appointGovernance);
-  describe('acceptGovernance(...)', acceptGovernance);
-  describe('setFee(...)', setFee);
-  describe('allowMigration(...)', allowMigration);
-  describe('addToBalance(...)', addToBalance);
-  describe('migrate(...)', migrate);
-  describe('deploy(...)', deploy);
-  describe('configure(...)', configure);
-  describe('pay(...)', pay);
-  describe('printPremineTickets(...)', printPreminedTickets);
-  describe('redeem(...)', redeem);
-  describe('tap(...)', tap);
-  describe('printReservedTickets(...)', printReservedTickets);
+	// Test each function.
+	describe('appointGovernance(...)', appointGovernance);
+	describe('acceptGovernance(...)', acceptGovernance);
+	describe('setFee(...)', setFee);
+	describe('allowMigration(...)', allowMigration);
+	describe('addToBalance(...)', addToBalance);
+	describe('migrate(...)', migrate);
+	describe('deploy(...)', deploy);
+	describe('configure(...)', configure);
+	describe('pay(...)', pay);
+	describe('printPremineTickets(...)', printPreminedTickets);
+	describe('redeem(...)', redeem);
+	describe('tap(...)', tap);
+	describe('printReservedTickets(...)', printReservedTickets);
 }

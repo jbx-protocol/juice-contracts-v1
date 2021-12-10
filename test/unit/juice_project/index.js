@@ -9,25 +9,22 @@ import withdraw from './withdraw';
 const contractName = 'ExampleJuiceboxProject';
 
 export default function () {
-  // Before the tests, deploy the contract.
-  before(async function () {
-    this.projectId = 1;
+	// Before the tests, deploy the contract.
+	before(async function () {
+		this.projectId = 1;
 
-    this.terminalDirectory = await this.deployMockLocalContractFn('TerminalDirectory');
+		this.terminalDirectory = await this.deployMockLocalContractFn('TerminalDirectory');
 
-    // Deploy the contract.
-    this.contract = await this.deployContractFn(contractName, [
-      this.projectId,
-      this.terminalDirectory.address,
-    ]);
-  });
+		// Deploy the contract.
+		this.contract = await this.deployContractFn(contractName, [this.projectId, this.terminalDirectory.address]);
+	});
 
-  // Test each function.
-  describe('setOperator(...)', setOperator);
-  describe('setOperators(...)', setOperators);
-  describe('transferProjectOwnership(...)', transferProjectOwnership);
-  describe('pay(...)', pay);
-  describe('takeFee(...)', takeFee);
-  describe('setProjectId(...)', setProjectId);
-  describe('withdraw(...)', withdraw);
+	// Test each function.
+	describe('setOperator(...)', setOperator);
+	describe('setOperators(...)', setOperators);
+	describe('transferProjectOwnership(...)', transferProjectOwnership);
+	describe('pay(...)', pay);
+	describe('takeFee(...)', takeFee);
+	describe('setProjectId(...)', setProjectId);
+	describe('withdraw(...)', withdraw);
 }

@@ -23,20 +23,20 @@ import tap from './tap';
 const contractName = 'FundingCycles';
 
 export default function () {
-  // Before the tests, deploy mocked dependencies and the contract.
-  before(async function () {
-    // Deploy mock dependency contracts.
-    this.ballot = await this.deployMockLocalContractFn('Active14DaysFundingCycleBallot');
-    this.terminalDirectory = await this.deployMockLocalContractFn('TerminalDirectory');
+	// Before the tests, deploy mocked dependencies and the contract.
+	before(async function () {
+		// Deploy mock dependency contracts.
+		this.ballot = await this.deployMockLocalContractFn('Active14DaysFundingCycleBallot');
+		this.terminalDirectory = await this.deployMockLocalContractFn('TerminalDirectory');
 
-    // Deploy the contract.
-    this.contract = await this.deployContractFn(contractName, [this.terminalDirectory.address]);
-  });
+		// Deploy the contract.
+		this.contract = await this.deployContractFn(contractName, [this.terminalDirectory.address]);
+	});
 
-  // Test each function.
-  describe('configure(...)', configure);
-  describe('tap(...)', tap);
-  describe('currentOf(...)', currentOf);
-  describe('queuedOf(...)', queuedOf);
-  describe('currentBallotStateOf(...)', currentBallotStateOf);
+	// Test each function.
+	describe('configure(...)', configure);
+	describe('tap(...)', tap);
+	describe('currentOf(...)', currentOf);
+	describe('queuedOf(...)', queuedOf);
+	describe('currentBallotStateOf(...)', currentBallotStateOf);
 }

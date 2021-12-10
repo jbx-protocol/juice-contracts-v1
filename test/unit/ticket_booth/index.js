@@ -12,30 +12,30 @@ import unstake from './unstake';
 const contractName = 'TicketBooth';
 
 export default function () {
-  // Before the tests, deploy mocked dependencies and the contract.
-  before(async function () {
-    // Deploy mock dependency contracts.
-    this.projects = await this.deployMockLocalContractFn('Projects');
-    this.operatorStore = await this.deployMockLocalContractFn('OperatorStore');
-    this.terminalDirectory = await this.deployMockLocalContractFn('TerminalDirectory');
+	// Before the tests, deploy mocked dependencies and the contract.
+	before(async function () {
+		// Deploy mock dependency contracts.
+		this.projects = await this.deployMockLocalContractFn('Projects');
+		this.operatorStore = await this.deployMockLocalContractFn('OperatorStore');
+		this.terminalDirectory = await this.deployMockLocalContractFn('TerminalDirectory');
 
-    // Deploy the contract.
-    this.contract = await this.deployContractFn(contractName, [
-      this.projects.address,
-      this.operatorStore.address,
-      this.terminalDirectory.address,
-    ]);
-  });
+		// Deploy the contract.
+		this.contract = await this.deployContractFn(contractName, [
+			this.projects.address,
+			this.operatorStore.address,
+			this.terminalDirectory.address,
+		]);
+	});
 
-  // Test each function.
-  describe('issue(...)', issue);
-  describe('print(...)', print);
-  describe('unstake(...)', unstake);
-  describe('stake(...)', stake);
-  describe('transfer(...)', transfer);
-  describe('redeem(...)', redeem);
-  describe('lock(...)', lock);
-  describe('unlock(...)', unlock);
-  describe('balanceOf(...)', balanceOf);
-  describe('totalSupplyOf(...)', totalSupplyOf);
+	// Test each function.
+	describe('issue(...)', issue);
+	describe('print(...)', print);
+	describe('unstake(...)', unstake);
+	describe('stake(...)', stake);
+	describe('transfer(...)', transfer);
+	describe('redeem(...)', redeem);
+	describe('lock(...)', lock);
+	describe('unlock(...)', unlock);
+	describe('balanceOf(...)', balanceOf);
+	describe('totalSupplyOf(...)', totalSupplyOf);
 }

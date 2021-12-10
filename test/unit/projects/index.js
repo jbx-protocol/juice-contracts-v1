@@ -9,21 +9,21 @@ import transferHandle from './transfer_handle';
 const contractName = 'Projects';
 
 export default function () {
-  // Before the tests, deploy mocked dependencies and the contract.
-  before(async function () {
-    // Deploy mock dependency contracts.
-    this.operatorStore = await this.deployMockLocalContractFn('OperatorStore');
+	// Before the tests, deploy mocked dependencies and the contract.
+	before(async function () {
+		// Deploy mock dependency contracts.
+		this.operatorStore = await this.deployMockLocalContractFn('OperatorStore');
 
-    // Deploy the contract.
-    this.contract = await this.deployContractFn(contractName, [this.operatorStore.address]);
-  });
+		// Deploy the contract.
+		this.contract = await this.deployContractFn(contractName, [this.operatorStore.address]);
+	});
 
-  // Test each function.
-  describe('create(...)', create);
-  describe('setHandle(...)', setHandle);
-  describe('setUri(...)', setUri);
-  describe('transferHandle(...)', transferHandle);
-  describe('claimHandle(...)', claimHandle);
-  describe('renewHandle(...)', renewHandle);
-  describe('challengeHandle(...)', challengeHandle);
+	// Test each function.
+	describe('create(...)', create);
+	describe('setHandle(...)', setHandle);
+	describe('setUri(...)', setUri);
+	describe('transferHandle(...)', transferHandle);
+	describe('claimHandle(...)', claimHandle);
+	describe('renewHandle(...)', renewHandle);
+	describe('challengeHandle(...)', challengeHandle);
 }

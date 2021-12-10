@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.6;
 
-import "./ITerminalDirectory.sol";
+import './ITerminalDirectory.sol';
 
 interface ITerminalUtility {
-    function terminalDirectory() external view returns (ITerminalDirectory);
+	function terminalDirectory() external view returns (ITerminalDirectory);
 }
