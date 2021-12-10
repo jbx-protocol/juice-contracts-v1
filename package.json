@@ -48,7 +48,7 @@
     "test": "mocha -r esm --bail",
     "test:unit": "mocha -r esm --grep \"Unit\" --bail",
     "test:integration": "mocha -r esm --grep \"Integration\" --bail",
-    "test:integration-exhaustive": "INTEGRATION_TEST_COUNT=100000 mocha -r esm --grep \"Integration\"",
+    "test:integration-exhaustive": "INTEGRATION_TEST_COUNT=250000 mocha -r esm --grep \"Integration\"",
     "clean": "rimraf ./cache && rimraf ./artifacts",
     "compile": "yarn clean && hardhat compile",
     "pretty": "prettier --write \"./**/*.{js,jsx,json}\""

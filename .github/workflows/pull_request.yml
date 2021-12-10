@@ -4,7 +4,7 @@ on:
     branches:
       - main
 jobs:
-  unit-test:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -40,7 +40,7 @@ jobs:
       # Compile smart contracts
       - name: Compile contracts
         run: yarn compile
-      # A local blockchain is required in order for unit tests to run.
+      # A local blockchain is required in order for tests to run.
       - name: Start local blockchain
         run: yarn chain --network hardhat &>/dev/null &
       # Give the local blockchain time to come up.
