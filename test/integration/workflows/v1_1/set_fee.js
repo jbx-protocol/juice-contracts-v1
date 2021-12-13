@@ -4,6 +4,8 @@
   All current configurations will not be affected, and will keep the old fee until a new configuration is approved.
 */
 
+import { BigNumber } from "@ethersproject/bignumber";
+
 // The currency will be 0, which corresponds to ETH, preventing the need for currency price conversion.
 const currency = 0;
 
@@ -193,13 +195,13 @@ export default [
   },
   {
     description: 'Set a new fee',
-    fn: async ({ randomBigNumberFn, constants, executeFn, deployer, contracts }) => {
-      const newFee = randomBigNumberFn({ max: constants.MaxPercent });
+    fn: async ({ randomBigNumberFn, executeFn, multisig, contracts }) => {
+      const newFee = randomBigNumberFn({ max: BigNumber.from(10) });
       await executeFn({
-        caller: deployer,
-        contract: contracts.governance,
+        caller: multisig,
+        contract: contracts.terminalV1_1,
         fn: 'setFee',
-        args: [contracts.terminalV1_1.address, newFee],
+        args: [newFee],
       });
       return { newFee };
     },

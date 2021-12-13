@@ -260,7 +260,7 @@ export default [
   },
   {
     description: 'Allow a migration to the new terminal',
-    fn: async ({ deployer, contracts, executeFn, deployContractFn }) => {
+    fn: async ({ multisig, contracts, executeFn, deployContractFn }) => {
       // The terminalV1_1 that will be migrated to.
       const secondTerminalV1_1 = await deployContractFn('TerminalV1_1', [
         contracts.projects.address,
@@ -273,10 +273,10 @@ export default [
         contracts.governance.address,
       ]);
       await executeFn({
-        caller: deployer,
-        contract: contracts.governance,
+        caller: multisig,
+        contract: contracts.terminalV1_1,
         fn: 'allowMigration',
-        args: [contracts.terminalV1_1.address, secondTerminalV1_1.address],
+        args: [secondTerminalV1_1.address],
       });
       return { secondTerminalV1_1 };
     },

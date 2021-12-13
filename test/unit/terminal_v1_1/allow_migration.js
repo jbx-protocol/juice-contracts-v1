@@ -5,8 +5,8 @@ const tests = {
   success: [
     {
       description: 'set a new terminal',
-      fn: async ({ governance, deployMockLocalContractFn, mockContracts }) => ({
-        caller: governance,
+      fn: async ({ multisig, deployMockLocalContractFn, mockContracts }) => ({
+        caller: multisig,
         terminal: (
           await deployMockLocalContractFn('TerminalV1', [
             mockContracts.projects.address,
@@ -16,7 +16,7 @@ const tests = {
             mockContracts.modStore.address,
             mockContracts.prices.address,
             mockContracts.terminalDirectory.address,
-            governance.address,
+            multisig.address,
           ])
         ).address,
       }),
@@ -28,21 +28,21 @@ const tests = {
       fn: ({ deployer, targetContract }) => ({
         caller: deployer,
         terminal: targetContract.address,
-        revert: 'TerminalV1_1: UNAUTHORIZED',
+        revert: 'Ownable: caller is not the owner',
       }),
     },
     {
       description: 'zero address',
-      fn: ({ governance }) => ({
-        caller: governance,
+      fn: ({ multisig }) => ({
+        caller: multisig,
         terminal: constants.AddressZero,
         revert: 'TerminalV1_1::allowMigration: ZERO_ADDRESS',
       }),
     },
     {
       description: 'same as current',
-      fn: ({ governance, targetContract }) => ({
-        caller: governance,
+      fn: ({ multisig, targetContract }) => ({
+        caller: multisig,
         terminal: targetContract.address,
         revert: 'TerminalV1_1::allowMigration: NO_OP',
       }),

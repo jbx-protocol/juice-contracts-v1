@@ -1,7 +1,5 @@
-import acceptGovernance from './accept_governance';
 import addToBalance from './add_to_balance';
 import allowMigration from './allow_migration';
-import appointGovernance from './appoint_governance';
 import configure from './configure';
 import deploy from './deploy';
 import migrate from './migrate';
@@ -38,9 +36,9 @@ export default function () {
       operatorStore.address,
     ]);
 
-    const governance = this.addrs[9];
+    const multisig = this.addrs[9];
 
-    this.governance = governance;
+    this.multisig = multisig;
 
     this.mockContracts = {
       operatorStore,
@@ -49,7 +47,7 @@ export default function () {
       terminalDirectory,
       fundingCycles,
       ticketBooth,
-      modStore,
+      modStore
     };
 
     this.targetContract = await this.deployContractFn(contractName, [
@@ -60,15 +58,13 @@ export default function () {
       modStore.address,
       prices.address,
       terminalDirectory.address,
-      governance.address,
+      multisig.address,
     ]);
 
     this.contractName = contractName;
   });
 
   // Test each function.
-  describe('appointGovernance(...)', appointGovernance);
-  describe('acceptGovernance(...)', acceptGovernance);
   describe('setFee(...)', setFee);
   describe('allowMigration(...)', allowMigration);
   describe('addToBalance(...)', addToBalance);

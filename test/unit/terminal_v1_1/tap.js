@@ -73,7 +73,7 @@ const tests = {
     },
     {
       description: 'with project mod using different terminal',
-      fn: async ({ addrs, mockContracts, governance, contractName, deployMockLocalContractFn }) => {
+      fn: async ({ addrs, mockContracts, multisig, contractName, deployMockLocalContractFn }) => {
         const terminal = await deployMockLocalContractFn(contractName, [
           mockContracts.projects.address,
           mockContracts.fundingCycles.address,
@@ -82,7 +82,7 @@ const tests = {
           mockContracts.modStore.address,
           mockContracts.prices.address,
           mockContracts.terminalDirectory.address,
-          governance.address,
+          multisig.address,
         ]);
         return {
           projectMod: {
@@ -194,7 +194,7 @@ const tests = {
 };
 
 const ops =
-  ({ deployer, addrs, mockContracts, deployMockLocalContractFn, deployContractFn, contractName }) =>
+  ({ deployer, multisig, addrs, mockContracts, deployMockLocalContractFn, deployContractFn, contractName }) =>
     async (custom) => {
       const {
         caller = deployer,
@@ -289,11 +289,6 @@ const ops =
         mods.push(allocatorMod);
       }
 
-      // Governance must be a mocked contract here.
-      const governance = await deployMockLocalContractFn('Governance', [
-        govProjectId,
-        mockContracts.terminalDirectory.address,
-      ]);
       const targetContract = await deployContractFn(contractName, [
         mockContracts.projects.address,
         mockContracts.fundingCycles.address,
@@ -302,8 +297,21 @@ const ops =
         mockContracts.modStore.address,
         mockContracts.prices.address,
         mockContracts.terminalDirectory.address,
-        governance.address,
+        multisig.address,
       ]);
+
+      const otherTerminal = await deployMockLocalContractFn('TerminalV1_1');
+
+      // await deployMockLocalContractFn(contractName, [
+      //   mockContracts.projects.address,
+      //   mockContracts.fundingCycles.address,
+      //   mockContracts.ticketBooth.address,
+      //   mockContracts.operatorStore.address,
+      //   mockContracts.modStore.address,
+      //   mockContracts.prices.address,
+      //   mockContracts.terminalDirectory.address,
+      //   multisig.address,
+      // ]);
 
       return [
         mockFn({
@@ -374,28 +382,11 @@ const ops =
         ...(fee > 0
           ? [
             mockFn({
-              mockContract: governance,
-              fn: 'projectId',
-              args: [],
-              returns: [govProjectId],
-            }),
-            mockFn({
               mockContract: mockContracts.terminalDirectory,
               fn: 'terminalOf',
-              args: [govProjectId],
-              returns: [govUsesSameTerminal ? targetContract.address : constants.AddressZero],
+              args: [1],
+              returns: [govUsesSameTerminal ? targetContract.address : otherTerminal.address],
             }),
-            ...(!govUsesSameTerminal
-              ? [
-                mockFn({
-                  mockContract: governance,
-                  fn: 'pay',
-                  // For some reason, the bytes to string doesnt match.
-                  // args: [owner, "Juicebox fee", false],
-                  returns: [],
-                }),
-              ]
-              : []),
             ...(govUsesSameTerminal
               ? [
                 mockFn({
@@ -434,6 +425,7 @@ const ops =
               : []),
           ]
           : []),
+
         mockFn({
           mockContract: mockContracts.projects,
           fn: 'handleOf',
@@ -523,13 +515,16 @@ const ops =
               : []),
           ]
           : []),
-        mockFn({
-          mockContract: governance,
-          fn: 'pay',
-          // For some reason, the bytes to string doesnt match.
-          // args: [owner, "Juicebox fee", false],
-          returns: [],
-        }),
+        ...(!govUsesSameTerminal
+          ? [
+            mockFn({
+              mockContract: otherTerminal,
+              fn: 'pay',
+              // For some reason, the bytes to string doesnt match.
+              // args: [1, owner, "Juicebox fee", false],
+              returns: [1],
+            })
+          ] : []),
         executeFn({
           caller,
           contract: targetContract,

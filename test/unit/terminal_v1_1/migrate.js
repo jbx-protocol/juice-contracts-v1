@@ -9,10 +9,10 @@ const tests = {
   success: [
     {
       description: 'no preset balance',
-      fn: async ({ deployer, deployMockLocalContractFn, mockContracts, governance }) => ({
+      fn: async ({ deployer, deployMockLocalContractFn, mockContracts, multisig }) => ({
         caller: deployer,
         projectOwner: deployer.address,
-        governance,
+        multisig,
         projectId: 1,
         terminal: await deployMockLocalContractFn('TerminalV1_1', [
           mockContracts.projects.address,
@@ -22,17 +22,17 @@ const tests = {
           mockContracts.modStore.address,
           mockContracts.prices.address,
           mockContracts.terminalDirectory.address,
-          governance.address,
+          multisig.address,
         ]),
         setup: {},
       }),
     },
     {
       description: 'with preset balance',
-      fn: async ({ deployer, deployMockLocalContractFn, mockContracts, governance }) => ({
+      fn: async ({ deployer, deployMockLocalContractFn, mockContracts, multisig }) => ({
         caller: deployer,
         projectOwner: deployer.address,
-        governance,
+        multisig,
         projectId: 1,
         terminal: await deployMockLocalContractFn('TerminalV1_1', [
           mockContracts.projects.address,
@@ -42,7 +42,7 @@ const tests = {
           mockContracts.modStore.address,
           mockContracts.prices.address,
           mockContracts.terminalDirectory.address,
-          governance.address,
+          multisig.address,
         ]),
         setup: {
           addToBalance: BigNumber.from(72),
@@ -51,10 +51,10 @@ const tests = {
     },
     {
       description: 'with unprinted reserved tickets',
-      fn: async ({ deployer, deployMockLocalContractFn, mockContracts, governance }) => ({
+      fn: async ({ deployer, deployMockLocalContractFn, mockContracts, multisig }) => ({
         caller: deployer,
         projectOwner: deployer.address,
-        governance,
+        multisig,
         projectId: 1,
         terminal: await deployMockLocalContractFn('TerminalV1_1', [
           mockContracts.projects.address,
@@ -64,7 +64,7 @@ const tests = {
           mockContracts.modStore.address,
           mockContracts.prices.address,
           mockContracts.terminalDirectory.address,
-          governance.address,
+          multisig.address,
         ]),
         setup: {
           unprintedReservedTicketAmount: BigNumber.from(1),
@@ -73,10 +73,10 @@ const tests = {
     },
     {
       description: 'with operator',
-      fn: async ({ deployer, addrs, deployMockLocalContractFn, mockContracts, governance }) => ({
+      fn: async ({ deployer, addrs, deployMockLocalContractFn, mockContracts, multisig }) => ({
         caller: deployer,
         projectOwner: addrs[0].address,
-        governance,
+        multisig,
         projectId: 1,
         terminal: await deployMockLocalContractFn('TerminalV1_1', [
           mockContracts.projects.address,
@@ -86,7 +86,7 @@ const tests = {
           mockContracts.modStore.address,
           mockContracts.prices.address,
           mockContracts.terminalDirectory.address,
-          governance.address,
+          multisig.address,
         ]),
         setup: {
           permissionFlag: true,
@@ -101,14 +101,14 @@ const tests = {
         deployer,
         deployMockLocalContractFn,
         mockContracts,
-        governance,
+        multisig,
         targetContract,
         addrs,
       }) => {
         return {
           caller: deployer,
           projectOwner: addrs[0].address,
-          governance,
+          multisig,
           projectId: 1,
           terminal: await deployMockLocalContractFn('TerminalV1_1', [
             mockContracts.projects.address,
@@ -118,7 +118,7 @@ const tests = {
             mockContracts.modStore.address,
             mockContracts.prices.address,
             mockContracts.terminalDirectory.address,
-            governance.address,
+            multisig.address,
           ]),
           setup: {
             allowMigration: false,
@@ -130,11 +130,11 @@ const tests = {
     },
     {
       description: 'unauthorized terminal',
-      fn: async ({ deployer, deployMockLocalContractFn, mockContracts, governance }) => {
+      fn: async ({ deployer, deployMockLocalContractFn, mockContracts, multisig }) => {
         return {
           caller: deployer,
           projectOwner: deployer.address,
-          governance,
+          multisig,
           projectId: 1,
           terminal: await deployMockLocalContractFn('TerminalV1_1', [
             mockContracts.projects.address,
@@ -144,7 +144,7 @@ const tests = {
             mockContracts.modStore.address,
             mockContracts.prices.address,
             mockContracts.terminalDirectory.address,
-            governance.address,
+            multisig.address,
           ]),
           setup: {
             allowMigration: false,
@@ -156,7 +156,7 @@ const tests = {
               mockContracts.modStore.address,
               mockContracts.prices.address,
               mockContracts.terminalDirectory.address,
-              governance.address,
+              multisig.address,
             ]),
           },
           revert: 'TerminalV1_1::migrate: UNAUTHORIZED',
@@ -169,13 +169,13 @@ const tests = {
         deployer,
         deployMockLocalContractFn,
         mockContracts,
-        governance,
+        multisig,
         targetContract,
       }) => {
         return {
           caller: deployer,
           projectOwner: deployer.address,
-          governance,
+          multisig,
           projectId: 1,
           terminal: await deployMockLocalContractFn('TerminalV1_1', [
             mockContracts.projects.address,
@@ -185,7 +185,7 @@ const tests = {
             mockContracts.modStore.address,
             mockContracts.prices.address,
             mockContracts.terminalDirectory.address,
-            governance.address,
+            multisig.address,
           ]),
           setup: {
             allowMigration: false,
@@ -205,7 +205,7 @@ export default function () {
         const {
           caller,
           projectOwner,
-          governance,
+          multisig,
           projectId,
           terminal,
           setup: {
@@ -223,7 +223,7 @@ export default function () {
           .returns(permissionFlag || false);
 
         // Allow migration to the given terminal.
-        await this.targetContract.connect(governance).allowMigration(terminal.address);
+        await this.targetContract.connect(multisig).allowMigration(terminal.address);
 
         await this.mockFn({
           mockContract: this.mockContracts.ticketBooth,
@@ -304,7 +304,7 @@ export default function () {
         const {
           caller,
           projectOwner,
-          governance,
+          multisig,
           projectId,
           terminal,
           setup: { allowMigration, currentTerminal, permissionFlag } = {},
@@ -321,7 +321,7 @@ export default function () {
 
         if (allowMigration)
           // Allow migration to the given terminal.
-          await this.targetContract.connect(governance).allowMigration(terminal.address);
+          await this.targetContract.connect(multisig).allowMigration(terminal.address);
 
         await this.mockContracts.terminalDirectory.mock.terminalOf
           .withArgs(projectId)

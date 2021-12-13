@@ -5,154 +5,65 @@
 export default [
   {
     description: 'The initial governance can set a new fee',
-    fn: ({ executeFn, deployer, contracts, randomBigNumberFn, constants }) =>
+    fn: ({ BigNumber, executeFn, multisig, contracts, randomBigNumberFn }) =>
       executeFn({
-        caller: deployer,
-        contract: contracts.governance,
+        caller: multisig,
+        contract: contracts.terminalV1_1,
         fn: 'setFee',
-        args: [contracts.terminalV1_1.address, randomBigNumberFn({ max: constants.MaxPercent })],
+        args: [randomBigNumberFn({ max: BigNumber.from(10) })],
       }),
   },
   {
-    description: 'Appoint a new governance',
-    fn: async ({ executeFn, deployer, contracts, randomSignerFn }) => {
+    description: 'Change owner',
+    fn: async ({ executeFn, contracts, multisig, randomSignerFn }) => {
       // Appoint a governance with a different address.
-      const firstAppointedGovernance = randomSignerFn();
+      const firstAppointedOwner = randomSignerFn();
 
       await executeFn({
-        caller: deployer,
-        contract: contracts.governance,
-        fn: 'appointGovernance',
-        args: [contracts.terminalV1_1.address, firstAppointedGovernance.address],
+        caller: multisig,
+        contract: contracts.terminalV1_1,
+        fn: 'transferOwnership',
+        args: [firstAppointedOwner.address],
       });
 
-      return { firstAppointedGovernance };
+      return { firstAppointedOwner };
     },
   },
   {
-    description: "The appointed governance shouldn't yet be able to set a fee",
+    description: "The new owner should be able to set a fee",
     fn: ({
       executeFn,
       contracts,
       randomBigNumberFn,
-      constants,
-      local: { firstAppointedGovernance },
+      BigNumber,
+      local: { firstAppointedOwner },
     }) =>
       executeFn({
-        caller: firstAppointedGovernance,
+        caller: firstAppointedOwner,
         contract: contracts.terminalV1_1,
         fn: 'setFee',
-        args: [randomBigNumberFn({ max: constants.MaxPercent })],
-        revert: 'TerminalV1_1: UNAUTHORIZED',
+        args: [randomBigNumberFn({ max: BigNumber.from(10) })]
       }),
   },
   {
-    description: 'The current governance should still be able to set a fee',
-    fn: ({ executeFn, deployer, contracts, randomBigNumberFn, constants }) =>
+    description: 'The old owner should not be able to set a fee',
+    fn: ({ executeFn, multisig, contracts, randomBigNumberFn, BigNumber }) =>
       executeFn({
-        caller: deployer,
-        contract: contracts.governance,
-        fn: 'setFee',
-        args: [contracts.terminalV1_1.address, randomBigNumberFn({ max: constants.MaxPercent })],
-      }),
-  },
-  {
-    description: 'Appoint a different governance',
-    fn: async ({ executeFn, deployer, contracts, randomSignerFn }) => {
-      // Appoint another governance with yet another address.
-      const secondAppointedGovernance = randomSignerFn();
-      await executeFn({
-        caller: deployer,
-        contract: contracts.governance,
-        fn: 'appointGovernance',
-        args: [contracts.terminalV1_1.address, secondAppointedGovernance.address],
-      });
-      return { secondAppointedGovernance };
-    },
-  },
-  {
-    description:
-      "If they're different, the first appointed governance should no longer be able to accept",
-    fn: ({
-      executeFn,
-      contracts,
-      local: { firstAppointedGovernance, secondAppointedGovernance },
-    }) =>
-      executeFn({
-        caller: firstAppointedGovernance,
-        contract: contracts.terminalV1_1,
-        fn: 'acceptGovernance',
-        args: [],
-        revert:
-          firstAppointedGovernance.address !== secondAppointedGovernance.address &&
-          'TerminalV1_1::acceptGovernance: UNAUTHORIZED',
-      }),
-  },
-  {
-    description: 'Accept a new governance',
-    fn: ({ executeFn, contracts, local: { secondAppointedGovernance } }) =>
-      executeFn({
-        caller: secondAppointedGovernance,
-        contract: contracts.terminalV1_1,
-        fn: 'acceptGovernance',
-        args: [],
-      }),
-  },
-  {
-    description: 'The old governance should no longer be able to set a fee',
-    fn: ({
-      executeFn,
-      deployer,
-      contracts,
-      randomBigNumberFn,
-      constants,
-      local: { secondAppointedGovernance },
-    }) =>
-      executeFn({
-        caller: deployer,
-        contract: contracts.governance,
-        fn: 'setFee',
-        args: [contracts.terminalV1_1.address, randomBigNumberFn({ max: constants.MaxPercent })],
-        revert:
-          contracts.governance.address !== secondAppointedGovernance.address &&
-          'TerminalV1_1: UNAUTHORIZED',
-      }),
-  },
-  {
-    description: 'The new governance should be able to set a fee',
-    fn: ({
-      executeFn,
-      randomBigNumberFn,
-      constants,
-      contracts,
-      local: { secondAppointedGovernance },
-    }) =>
-      executeFn({
-        caller: secondAppointedGovernance,
+        caller: multisig,
         contract: contracts.terminalV1_1,
         fn: 'setFee',
-        args: [randomBigNumberFn({ max: constants.MaxPercent })],
+        args: [randomBigNumberFn({ max: BigNumber.from(10) })],
+        revert: "Ownable: caller is not the owner"
       }),
   },
   {
-    description: 'New governance should be able to appoint the old governance back',
-    fn: ({ executeFn, contracts, local: { secondAppointedGovernance } }) =>
+    description: 'New governance should be able to transfer to the old governance back',
+    fn: ({ executeFn, contracts, multisig, local: { firstAppointedOwner } }) =>
       executeFn({
-        caller: secondAppointedGovernance,
+        caller: firstAppointedOwner,
         contract: contracts.terminalV1_1,
-        fn: 'appointGovernance',
-        args: [contracts.governance.address],
+        fn: 'transferOwnership',
+        args: [multisig.address],
       }),
-  },
-  {
-    description: 'Set the old governance back',
-    fn: ({ executeFn, contracts, deployer }) => {
-      executeFn({
-        caller: deployer,
-        contract: contracts.governance,
-        fn: 'acceptGovernance',
-        args: [contracts.terminalV1_1.address],
-      });
-    },
-  },
+  }
 ];

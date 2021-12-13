@@ -353,5 +353,5 @@ describe('Juicebox', async function () {
 
   // Run the tests.
   describe('Unit', unit);
-  describe('Integration', integration);
+  describe.only('Integration', integration);
 });

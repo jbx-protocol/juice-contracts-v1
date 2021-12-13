@@ -270,12 +270,12 @@ export default [
   },
   {
     description: 'Allow a migration to the new terminalV1_1',
-    fn: ({ deployer, contracts, executeFn, local: { secondTerminalV1_1 } }) =>
+    fn: ({ multisig, contracts, executeFn, local: { secondTerminalV1_1 } }) =>
       executeFn({
-        caller: deployer,
-        contract: contracts.governance,
+        caller: multisig,
+        contract: contracts.terminalV1_1,
         fn: 'allowMigration',
-        args: [contracts.terminalV1_1.address, secondTerminalV1_1.address],
+        args: [secondTerminalV1_1.address],
       }),
   },
   {

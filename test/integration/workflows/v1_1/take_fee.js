@@ -180,9 +180,9 @@ export default [
   },
   {
     description: 'Allow migration to a new terminalV1_1',
-    fn: async ({ deployer, contracts, executeFn, deployContractFn }) => {
+    fn: async ({ deployer, contracts, multisig, executeFn, deployContractFn }) => {
       // The terminalV1_1 that will be migrated to.
-      const secondTerminalV1 = await deployContractFn('TerminalV1', [
+      const secondTerminalV1_1 = await deployContractFn('TerminalV1_1', [
         contracts.projects.address,
         contracts.fundingCycles.address,
         contracts.ticketBooth.address,
@@ -190,27 +190,27 @@ export default [
         contracts.modStore.address,
         contracts.prices.address,
         contracts.terminalDirectory.address,
-        contracts.governance.address,
+        multisig.address,
       ]);
 
       await executeFn({
-        caller: deployer,
-        contract: contracts.governance,
+        caller: multisig,
+        contract: contracts.terminalV1_1,
         fn: 'allowMigration',
-        args: [contracts.terminalV1_1.address, secondTerminalV1.address],
+        args: [secondTerminalV1_1.address],
       });
 
-      return { secondTerminalV1 };
+      return { secondTerminalV1_1 };
     },
   },
   {
     description: 'Migrating to the new terminalV1_1',
-    fn: async ({ contracts, executeFn, local: { owner, expectedProjectId, secondTerminalV1 } }) =>
+    fn: async ({ contracts, executeFn, local: { owner, expectedProjectId, secondTerminalV1_1 } }) =>
       executeFn({
         caller: owner,
         contract: contracts.terminalV1_1,
         fn: 'migrate',
-        args: [expectedProjectId, secondTerminalV1.address],
+        args: [expectedProjectId, secondTerminalV1_1.address],
       }),
   },
   {
@@ -218,14 +218,14 @@ export default [
     fn: async ({
       executeFn,
       randomSignerFn,
-      local: { target, expectedProjectId, amountToTap1, secondTerminalV1 },
+      local: { target, expectedProjectId, amountToTap1, secondTerminalV1_1 },
     }) => {
       // Tap the other portion of the target.
       const amountToTap2 = target.sub(amountToTap1);
 
       await executeFn({
         caller: randomSignerFn(),
-        contract: secondTerminalV1,
+        contract: secondTerminalV1_1,
         fn: 'tap',
         args: [expectedProjectId, amountToTap2, currency, amountToTap2],
       });

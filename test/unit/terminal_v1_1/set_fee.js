@@ -8,10 +8,17 @@ import { expect } from 'chai';
 const tests = {
   success: [
     {
-      description: 'set to 100%',
-      fn: ({ governance }) => ({
-        caller: governance,
-        fee: BigNumber.from(200),
+      description: 'set to 5%',
+      fn: ({ multisig }) => ({
+        caller: multisig,
+        fee: BigNumber.from(10),
+      }),
+    },
+    {
+      description: 'set to 0%',
+      fn: ({ multisig }) => ({
+        caller: multisig,
+        fee: BigNumber.from(0),
       }),
     },
   ],
@@ -21,14 +28,14 @@ const tests = {
       fn: ({ deployer }) => ({
         caller: deployer,
         fee: BigNumber.from(200),
-        revert: 'TerminalV1_1: UNAUTHORIZED',
+        revert: 'Ownable: caller is not the owner',
       }),
     },
     {
-      description: 'over 100%',
-      fn: ({ governance }) => ({
-        caller: governance,
-        fee: BigNumber.from(201),
+      description: 'over 5%',
+      fn: ({ multisig }) => ({
+        caller: multisig,
+        fee: BigNumber.from(11),
         revert: 'TerminalV1_1::setFee: BAD_FEE',
       }),
     },
