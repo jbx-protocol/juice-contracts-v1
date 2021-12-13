@@ -34,13 +34,7 @@ import './libraries/Operations.sol';
   @dev 
   A project can transfer its funds, along with the power to reconfigure and mint/burn their Tickets, from this contract to another allowed terminal contract at any time.
 */
-contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
-  // Modifier to only allow governance to call the function.
-  modifier onlyGov() {
-    require(msg.sender == governance, 'TerminalV1_1: UNAUTHORIZED');
-    _;
-  }
-
+contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, Ownable {
   // --- private stored properties --- //
 
   // The difference between the processed ticket tracker of a project and the project's ticket's total supply is the amount of tickets that
@@ -74,12 +68,6 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
 
   /// @notice The percent fee the Juicebox project takes from tapped amounts. Out of 200.
   uint256 public override fee = 10;
-
-  /// @notice The governance of the contract who makes fees and can allow new TerminalV1 contracts to be migrated to by project owners.
-  address payable public override governance;
-
-  /// @notice The governance of the contract who makes fees and can allow new TerminalV1 contracts to be migrated to by project owners.
-  address payable public override pendingGovernance;
 
   // Whether or not a particular contract is available for projects to migrate their funds and Tickets to.
   mapping(ITerminal => bool) public override migrationIsAllowed;
@@ -240,7 +228,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
     IModStore _modStore,
     IPrices _prices,
     ITerminalDirectory _terminalDirectory,
-    address payable _governance
+    address _owner
   ) Operatable(_operatorStore) {
     require(
       _projects != IProjects(address(0)) &&
@@ -249,7 +237,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
         _modStore != IModStore(address(0)) &&
         _prices != IPrices(address(0)) &&
         _terminalDirectory != ITerminalDirectory(address(0)) &&
-        _governance != address(address(0)),
+        _owner != address(0),
       'TerminalV1: ZERO_ADDRESS'
     );
     projects = _projects;
@@ -258,7 +246,8 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
     modStore = _modStore;
     prices = _prices;
     terminalDirectory = _terminalDirectory;
-    governance = _governance;
+
+    transferOwnership(_owner);
   }
 
   /**
@@ -708,7 +697,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
 
       @param _contract The contract to allow.
     */
-  function allowMigration(ITerminal _contract) external override onlyGov {
+  function allowMigration(ITerminal _contract) external override onlyOwner {
     // Can't allow the zero address.
     require(_contract != ITerminal(address(0)), 'TerminalV1_1::allowMigration: ZERO_ADDRESS');
 
@@ -730,57 +719,21 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
       All future funding cycles based on configurations made in the past will use the fee that was set at the time of the configuration.
     
       @dev
-      Only governance can set a new fee.
+      Only the owner can set a new fee.
+
+      @dev
+      The max fee is 5%.
 
       @param _fee The new fee percent. Out of 200.
     */
-  function setFee(uint256 _fee) external override onlyGov {
-    // Fee must be under 100%.
-    require(_fee <= 200, 'TerminalV1_1::setFee: BAD_FEE');
+  function setFee(uint256 _fee) external override onlyOwner {
+    // Fee must be under 5%.
+    require(_fee <= 10, 'TerminalV1_1::setFee: BAD_FEE');
 
     // Set the fee.
     fee = _fee;
 
     emit SetFee(_fee);
-  }
-
-  /** 
-      @notice 
-      Allows governance to transfer its privileges to another contract.
-
-      @dev
-      Only the currency governance can appoint a new governance.
-
-      @param _pendingGovernance The governance to transition power to. 
-        @dev This address will have to accept the responsibility in a subsequent transaction.
-    */
-  function appointGovernance(address payable _pendingGovernance) external override onlyGov {
-    // The new governance can't be the zero address.
-    require(_pendingGovernance != address(0), 'TerminalV1_1::appointGovernance: ZERO_ADDRESS');
-    // The new governance can't be the same as the current governance.
-    require(_pendingGovernance != governance, 'TerminalV1_1::appointGovernance: NO_OP');
-
-    // Set the appointed governance as pending.
-    pendingGovernance = _pendingGovernance;
-
-    emit AppointGovernance(_pendingGovernance);
-  }
-
-  /** 
-      @notice 
-      Allows contract to accept its appointment as the new governance.
-    */
-  function acceptGovernance() external override {
-    // Only the pending governance address can accept.
-    require(msg.sender == pendingGovernance, 'TerminalV1_1::acceptGovernance: UNAUTHORIZED');
-
-    // Get a reference to the pending governance.
-    address payable _pendingGovernance = pendingGovernance;
-
-    // Set the govenance to the pending value.
-    governance = _pendingGovernance;
-
-    emit AcceptGovernance(_pendingGovernance);
   }
 
   // --- public transactions --- //
@@ -1198,12 +1151,17 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard {
     if (feeAmount == 0) return 0;
 
     // When processing the admin fee, save gas if the admin is using this contract as its terminal.
-    if (terminalDirectory.terminalOf(JuiceboxProject(governance).projectId()) == this) {
+    if (terminalDirectory.terminalOf(1) == this) {
       // Use the local pay call.
-      _pay(JuiceboxProject(governance).projectId(), feeAmount, _beneficiary, _memo, false);
+      _pay(1, feeAmount, _beneficiary, _memo, false);
     } else {
-      // Use the external pay call of the governance contract.
-      JuiceboxProject(governance).pay{value: feeAmount}(_beneficiary, _memo, false);
+      // Get the terminal for this contract's project.
+      ITerminal _terminal = terminalDirectory.terminalOf(1);
+
+      // There must be a terminal.
+      require(_terminal != ITerminal(address(0)), 'TerminalV1_1::_takeFee: TERMINAL_NOT_FOUND');
+
+      _terminal.pay{value: feeAmount}(1, _beneficiary, _memo, false);
     }
   }
 }

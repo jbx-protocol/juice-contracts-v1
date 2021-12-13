@@ -22,6 +22,11 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
       chain = 'rinkeby';
       multisig = '0x69C6026e3938adE9e1ddE8Ff6A37eC96595bF1e1';
       break;
+    // local
+    case '31337':
+      chain = 'localhost';
+      multisig = '0x69C6026e3938adE9e1ddE8Ff6A37eC96595bF1e1';
+      break;
     default:
       throw new Error(`Chain id ${chainId} not supported`);
   }

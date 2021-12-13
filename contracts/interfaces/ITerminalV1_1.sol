@@ -84,9 +84,6 @@ interface ITerminalV1_1 {
     uint256 modCut,
     address caller
   );
-  event AppointGovernance(address governance);
-
-  event AcceptGovernance(address governance);
 
   event PrintTickets(
     uint256 indexed projectId,
@@ -105,10 +102,6 @@ interface ITerminalV1_1 {
   event SetFee(uint256 _amount);
 
   event SetTargetLocalWei(uint256 amount);
-
-  function governance() external view returns (address payable);
-
-  function pendingGovernance() external view returns (address payable);
 
   function projects() external view returns (IProjects);
 
@@ -184,8 +177,4 @@ interface ITerminalV1_1 {
     returns (uint256 reservedTicketsToPrint);
 
   function setFee(uint256 _fee) external;
-
-  function appointGovernance(address payable _pendingGovernance) external;
-
-  function acceptGovernance() external;
 }
