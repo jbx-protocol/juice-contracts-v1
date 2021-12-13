@@ -43,7 +43,7 @@
     "solidity"
   ],
   "scripts": {
-    "chain": "hardhat node",
+    "chain": "hardhat node --no-deploy",
     "account": "hardhat account",
     "test": "mocha -r esm --bail --timeout 6000",
     "test:unit": "mocha -r esm --grep \"Unit\" --bail",
