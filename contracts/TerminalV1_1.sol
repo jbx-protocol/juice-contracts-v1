@@ -144,6 +144,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
 
     // There's no overflow if there's no funding cycle.
     if (_fundingCycle.number == 0) {
+      // Use the redemption rate of the last funding cycle.
       _fundingCycle = fundingCycles.get(fundingCycles.latestIdOf(_projectId));
       if (_fundingCycle.discountRate != 201) return 0;
     }
