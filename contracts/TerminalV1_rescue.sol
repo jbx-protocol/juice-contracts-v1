@@ -75,16 +75,19 @@ contract TerminalV1_Rescue is ITerminal, Ownable {
     // Get a reference to the project's current funding cycle.
     FundingCycle memory _fundingCycle = fundingCycles.currentOf(_projectId);
 
+    // Stuck projects will not have a current funding cycle.
     require(_fundingCycle.number == 0, 'TerminalV1_Rescue::addToBalance: NOT_STUCK');
 
+    // Make sure the current ballot is approved before checking the status of the latest funding cycle.
     require(
       fundingCycles.currentBallotStateOf(_projectId) == BallotState.Approved,
       'TerminalV1_Rescue::addToBalance: BALLOT_NOT_APPROVED'
     );
 
-    // Use the redemption rate of the last funding cycle.
+    // Check to see if the latest funding cycle is one-time (discount rate = 201).
+    // Only allow migration to this contract if this is the case.
     _fundingCycle = fundingCycles.get(fundingCycles.latestIdOf(_projectId));
-    if (_fundingCycle.discountRate != 201) return;
+    require(_fundingCycle.discountRate == 201, 'TerminalV1_Rescue::addToBalance: NOT_STUCK');
 
     // Otherwise, send the funds directly to the beneficiary.
     Address.sendValue(payable(projects.ownerOf(_projectId)), msg.value);
