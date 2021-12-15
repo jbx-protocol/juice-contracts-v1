@@ -143,7 +143,10 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
     FundingCycle memory _fundingCycle = fundingCycles.currentOf(_projectId);
 
     // There's no overflow if there's no funding cycle.
-    if (_fundingCycle.number == 0) return 0;
+    if (_fundingCycle.number == 0) {
+      _fundingCycle = fundingCycles.get(fundingCycles.latestIdOf(_projectId));
+      if (_fundingCycle.discountRate != 201) return 0;
+    }
 
     // Get the amount of current overflow.
     uint256 _overflow = _overflowFrom(_fundingCycle);
