@@ -398,7 +398,7 @@ export default [
           redeemBeneficiary1,
           randomBoolFn(),
         ],
-        revert: redeemableTicketsOfTicketBeneficiary1.eq(0) && "TerminalV1_1::redeem: NO_OP"
+        revert: redeemableTicketsOfTicketBeneficiary1.eq(0) && "TV1_1::redeem: NO_OP"
       });
 
       return {
@@ -648,7 +648,7 @@ export default [
   //         redeemBeneficiary2,
   //         randomBoolFn(),
   //       ],
-  //       revert: redeemableTicketsOfTicketBeneficiary2.eq(0) ? "TerminalV1_1::redeem: NO_OP" : noLiquidityForTicketBenificiary2 ? "TerminalV1_1::claimableOverflow: INSUFFICIENT_LIQUIDITY" : undefined
+  //       revert: redeemableTicketsOfTicketBeneficiary2.eq(0) ? "TV1_1::redeem: NO_OP" : noLiquidityForTicketBenificiary2 ? "TV1_1::claimableOverflow: INSUFFICIENT_LIQUIDITY" : undefined
   //     });
 
   //     return {
@@ -808,7 +808,7 @@ export default [
   //         redeemableTicketsOfTicketBeneficiary3,
   //       ],
   //       expect: expectedClaimableAmount,
-  //       revert: noLiquidityForTicketBenificiary3 && "TerminalV1_1::claimableOverflow: INSUFFICIENT_LIQUIDITY",
+  //       revert: noLiquidityForTicketBenificiary3 && "TV1_1::claimableOverflow: INSUFFICIENT_LIQUIDITY",
   //       // Allow some wiggle room due to possible division precision errors.
   //       plusMinus: {
   //         amount: 100,
@@ -859,7 +859,7 @@ export default [
   //         redeemBeneficiary3,
   //         randomBoolFn(),
   //       ],
-  //       revert: noLiquidityForTicketBenificiary3 && "TerminalV1_1::claimableOverflow: INSUFFICIENT_LIQUIDITY"
+  //       revert: noLiquidityForTicketBenificiary3 && "TV1_1::claimableOverflow: INSUFFICIENT_LIQUIDITY"
   //     });
 
   //     return {
@@ -1068,7 +1068,7 @@ export default [
   //         count: reservedTicketBalance,
   //         total: await contracts.ticketBooth.totalSupplyOf(expectedProjectId),
   //         overflow: expectedClaimableAmount,
-  //         revert: noLiquidityForOwner && "TerminalV1_1::claimableOverflow: INSUFFICIENT_LIQUIDITY"
+  //         revert: noLiquidityForOwner && "TV1_1::claimableOverflow: INSUFFICIENT_LIQUIDITY"
   //       }),
   //       // Allow some wiggle room due to possible division precision errors.
   //       plusMinus: {
@@ -1118,7 +1118,7 @@ export default [
   //         redeemBeneficiary4,
   //         randomBoolFn(),
   //       ],
-  //       revert: expectNoOp ? 'TerminalV1_1::redeem: NO_OP' : noLiquidityForOwner ? "TerminalV1_1::claimableOverflow: INSUFFICIENT_LIQUIDITY" : undefined,
+  //       revert: expectNoOp ? 'TV1_1::redeem: NO_OP' : noLiquidityForOwner ? "TV1_1::claimableOverflow: INSUFFICIENT_LIQUIDITY" : undefined,
   //     });
 
   //     // If the requested reverted with no op, the tickets wont be redeemed.

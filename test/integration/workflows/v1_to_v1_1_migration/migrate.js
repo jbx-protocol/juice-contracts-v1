@@ -462,7 +462,7 @@ export default [
         randomAddressFn(),
         randomBoolFn(),
         ],
-        revert: reservedRate.eq(0) && 'TerminalV1_1::redeem: NO_OP',
+        revert: reservedRate.eq(0) && 'TV1_1::redeem: NO_OP',
       }),
   },
   {

@@ -90,7 +90,7 @@ const tests = {
         },
         payoutMods: [],
         ticketMods: [],
-        revert: 'TerminalV1_1::_validateAndPackFundingCycleMetadata: BAD_RESERVED_RATE',
+        revert: 'TV1_1::_validateAndPackFundingCycleMetadata: BAD_RESERVED_RATE',
       }),
     },
     {
@@ -108,7 +108,7 @@ const tests = {
         },
         payoutMods: [],
         ticketMods: [],
-        revert: 'TerminalV1_1::_validateAndPackFundingCycleMetadata: BAD_BONDING_CURVE_RATE',
+        revert: 'TV1_1::_validateAndPackFundingCycleMetadata: BAD_BONDING_CURVE_RATE',
       }),
     },
     {
@@ -127,7 +127,7 @@ const tests = {
         payoutMods: [],
         ticketMods: [],
         revert:
-          'TerminalV1_1::_validateAndPackFundingCycleMetadata: BAD_RECONFIGURATION_BONDING_CURVE_RATE',
+          'TV1_1::_validateAndPackFundingCycleMetadata: BAD_RECONFIGURATION_BONDING_CURVE_RATE',
       }),
     },
   ],

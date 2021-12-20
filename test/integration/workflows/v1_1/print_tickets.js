@@ -567,7 +567,7 @@ export default [
           randomStringFn(),
           randomBoolFn(),
         ],
-        revert: "TerminalV1_1::printTickets: NOT_ALLOWED"
+        revert: "TV1_1::printTickets: NOT_ALLOWED"
       }),
   },
 ];

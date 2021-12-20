@@ -159,7 +159,7 @@ const tests = {
               multisig.address,
             ]),
           },
-          revert: 'TerminalV1_1::migrate: UNAUTHORIZED',
+          revert: 'TV1_1::migrate: UNAUTHORIZED',
         };
       },
     },
@@ -191,7 +191,7 @@ const tests = {
             allowMigration: false,
             currentTerminal: targetContract,
           },
-          revert: 'TerminalV1_1::migrate: NOT_ALLOWED',
+          revert: 'TV1_1::migrate: NOT_ALLOWED',
         };
       },
     },

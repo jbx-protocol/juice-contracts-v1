@@ -95,7 +95,7 @@ export default [
           min: BigNumber.from(1000),
           max: (await getBalanceFn(payer.address)).div(100),
         }),
-        revert: "TerminalV1_1::pay: PAUSED"
+        revert: "TV1_1::pay: PAUSED"
       })
     }
   },
@@ -173,7 +173,7 @@ export default [
   },
   {
     description: 'Making a payment to an project without paused payments should work',
-    fn: ({
+    fn: async ({
       executeFn,
       randomStringFn,
       randomSignerFn,
@@ -182,16 +182,18 @@ export default [
       getBalanceFn,
       randomBigNumberFn,
       local: { expectedProjectId },
-    }) =>
-      executeFn({
-        caller: randomSignerFn(),
+    }) => {
+      const payer = randomSignerFn();
+      await executeFn({
+        caller: payer,
         contract: contracts.terminalV1_1,
         fn: 'pay',
         args: [expectedProjectId, randomSignerFn().address, randomStringFn(), randomBoolFn()],
         value: randomBigNumberFn({
           min: BigNumber.from(1000),
           max: (await getBalanceFn(payer.address)).div(100),
-        }),
-      })
+        })
+      });
+    }
   },
 ];

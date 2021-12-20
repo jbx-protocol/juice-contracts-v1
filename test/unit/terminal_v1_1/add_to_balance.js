@@ -55,7 +55,7 @@ const tests = {
         caller: deployer,
         projectId: 1,
         amount: BigNumber.from(0),
-        revert: 'TerminalV1_1::addToBalance: BAD_AMOUNT',
+        revert: 'TV1_1::addToBalance: BAD_AMOUNT',
       }),
     },
   ],

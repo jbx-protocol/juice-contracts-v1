@@ -392,7 +392,7 @@ export default [
           redeemBeneficiary1,
           randomBoolFn(),
         ],
-        revert: redeemableTicketsOfTicketBeneficiary1.eq(0) && "TerminalV1_1::redeem: NO_OP"
+        revert: redeemableTicketsOfTicketBeneficiary1.eq(0) && "TV1_1::redeem: NO_OP"
       });
 
       return {
@@ -636,7 +636,7 @@ export default [
           redeemBeneficiary2,
           randomBoolFn(),
         ],
-        revert: redeemableTicketsOfTicketBeneficiary2.eq(0) && "TerminalV1_1::redeem: NO_OP"
+        revert: redeemableTicketsOfTicketBeneficiary2.eq(0) && "TV1_1::redeem: NO_OP"
       });
 
       return {
@@ -840,7 +840,7 @@ export default [
           redeemBeneficiary3,
           randomBoolFn(),
         ],
-        revert: redeemableTicketsOfTicketBeneficiary3.eq(0) && 'TerminalV1_1::redeem: NO_OP'
+        revert: redeemableTicketsOfTicketBeneficiary3.eq(0) && 'TV1_1::redeem: NO_OP'
       });
 
       return {
@@ -1092,7 +1092,7 @@ export default [
           redeemBeneficiary4,
           randomBoolFn(),
         ],
-        revert: expectNoOp && 'TerminalV1_1::redeem: NO_OP',
+        revert: expectNoOp && 'TV1_1::redeem: NO_OP',
       });
 
       // If the requested reverted with no op, the tickets wont be redeemed.

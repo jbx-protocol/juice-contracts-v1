@@ -316,7 +316,7 @@ export default [
           randomAddressFn(),
           false, // prefer staked
         ],
-        revert: expectNoOp && 'TerminalV1_1::redeem: NO_OP',
+        revert: expectNoOp && 'TV1_1::redeem: NO_OP',
       });
 
       return {
@@ -415,7 +415,7 @@ export default [
           randomAddressFn(),
           true, // prefer unstaked
         ],
-        revert: expectNoOp && 'TerminalV1_1::redeem: NO_OP',
+        revert: expectNoOp && 'TV1_1::redeem: NO_OP',
       });
 
       return {
@@ -519,7 +519,7 @@ export default [
           randomAddressFn(),
           randomBoolFn(),
         ],
-        revert: expectNoOp && 'TerminalV1_1::redeem: NO_OP',
+        revert: expectNoOp && 'TV1_1::redeem: NO_OP',
       });
 
       return {

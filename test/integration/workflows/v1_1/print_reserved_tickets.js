@@ -670,7 +670,7 @@ export default [
           randomAddressFn({ exclude: [owner.address] }),
           randomBoolFn(),
         ],
-        revert: ticketAmount.eq(0) && 'TerminalV1_1::redeem: NO_OP',
+        revert: ticketAmount.eq(0) && 'TV1_1::redeem: NO_OP',
       });
     },
   },
@@ -725,7 +725,7 @@ export default [
           randomAddressFn(),
           randomBoolFn(),
         ],
-        revert: ticketAmount.eq(0) && 'TerminalV1_1::redeem: NO_OP',
+        revert: ticketAmount.eq(0) && 'TV1_1::redeem: NO_OP',
       });
     },
   },

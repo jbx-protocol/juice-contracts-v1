@@ -177,4 +177,6 @@ interface ITerminalV1_1 {
     returns (uint256 reservedTicketsToPrint);
 
   function setFee(uint256 _fee) external;
+
+  function burnFromZeroAddress(uint256 _projectId) external;
 }
