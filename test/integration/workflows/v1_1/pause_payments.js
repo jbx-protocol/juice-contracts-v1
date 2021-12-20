@@ -171,4 +171,27 @@ export default [
       })
     }
   },
+  {
+    description: 'Making a payment to an project without paused payments should work',
+    fn: ({
+      executeFn,
+      randomStringFn,
+      randomSignerFn,
+      randomBoolFn,
+      contracts,
+      getBalanceFn,
+      randomBigNumberFn,
+      local: { expectedProjectId },
+    }) =>
+      executeFn({
+        caller: randomSignerFn(),
+        contract: contracts.terminalV1_1,
+        fn: 'pay',
+        args: [expectedProjectId, randomSignerFn().address, randomStringFn(), randomBoolFn()],
+        value: randomBigNumberFn({
+          min: BigNumber.from(1000),
+          max: (await getBalanceFn(payer.address)).div(100),
+        }),
+      })
+  },
 ];
