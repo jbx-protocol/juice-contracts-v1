@@ -8,6 +8,7 @@ import './IFundingCycles.sol';
 import './IYielder.sol';
 import './IProjects.sol';
 import './IModStore.sol';
+import './IPrices.sol';
 import './ITerminal.sol';
 import './IOperatorStore.sol';
 
