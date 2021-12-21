@@ -36,7 +36,7 @@ const tests = {
       fn: ({ multisig }) => ({
         caller: multisig,
         fee: BigNumber.from(11),
-        revert: 'TerminalV1_1::setFee: BAD_FEE',
+        revert: 'TV1_1::setFee: BAD_FEE',
       }),
     },
   ],

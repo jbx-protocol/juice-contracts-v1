@@ -36,7 +36,7 @@ const tests = {
       fn: ({ multisig }) => ({
         caller: multisig,
         terminal: constants.AddressZero,
-        revert: 'TerminalV1_1::allowMigration: ZERO_ADDRESS',
+        revert: 'TV1_1::allowMigration: ZERO_ADDRESS',
       }),
     },
     {
@@ -44,7 +44,7 @@ const tests = {
       fn: ({ multisig, targetContract }) => ({
         caller: multisig,
         terminal: targetContract.address,
-        revert: 'TerminalV1_1::allowMigration: NO_OP',
+        revert: 'TV1_1::allowMigration: NO_OP',
       }),
     },
   ],

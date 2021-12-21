@@ -181,14 +181,14 @@ const tests = {
       description: 'zero count',
       fn: () => ({
         count: BigNumber.from(0),
-        revert: 'TerminalV1_1::redeem: NO_OP',
+        revert: 'TV1_1::redeem: NO_OP',
       }),
     },
     {
       description: 'zero address',
       fn: () => ({
         beneficiary: constants.AddressZero,
-        revert: 'TerminalV1_1::redeem: ZERO_ADDRESS',
+        revert: 'TV1_1::redeem: ZERO_ADDRESS',
       }),
     },
     {
@@ -196,7 +196,7 @@ const tests = {
       fn: () => ({
         count: BigNumber.from(2),
         ticketBalance: BigNumber.from(1),
-        revert: 'TerminalV1_1::claimableOverflow: INSUFFICIENT_TICKETS',
+        revert: 'TV1_1::claimableOverflow: INSUFFICIENT_TICKETS',
       }),
     },
     {
@@ -207,7 +207,7 @@ const tests = {
         ethPrice: BigNumber.from(10).pow(18).mul(2),
         addToBalance: BigNumber.from(10).pow(18).mul(100),
         minReturnedWei: BigNumber.from(10).pow(18).mul(50).add(1),
-        revert: 'TerminalV1_1::redeem: INADEQUATE',
+        revert: 'TV1_1::redeem: INADEQUATE',
       }),
     },
   ],

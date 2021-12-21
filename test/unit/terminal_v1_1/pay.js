@@ -33,21 +33,21 @@ const tests = {
       description: 'paid zero',
       fn: () => ({
         amount: BigNumber.from(0),
-        revert: 'TerminalV1_1::pay: BAD_AMOUNT',
+        revert: 'TV1_1::pay: BAD_AMOUNT',
       }),
     },
     {
       description: 'paused',
       fn: () => ({
         paused: true,
-        revert: 'TerminalV1_1::pay: PAUSED',
+        revert: 'TV1_1::pay: PAUSED',
       }),
     },
     {
       description: 'zero address beneficiary',
       fn: () => ({
         beneficiary: constants.AddressZero,
-        revert: 'TerminalV1_1::pay: ZERO_ADDRESS',
+        revert: 'TV1_1::pay: ZERO_ADDRESS',
       }),
     },
   ],

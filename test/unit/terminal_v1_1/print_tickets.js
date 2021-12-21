@@ -48,14 +48,14 @@ const tests = {
       description: 'not allowed',
       fn: () => ({
         allowed: false,
-        revert: 'TerminalV1_1::printTickets: NOT_ALLOWED',
+        revert: 'TV1_1::printTickets: NOT_ALLOWED',
       }),
     },
     {
       description: 'max limit reached',
       fn: ({ constants }) => ({
         amount: constants.MaxInt256.add(1),
-        revert: 'TerminalV1_1::printTickets: INT_LIMIT_REACHED',
+        revert: 'TV1_1::printTickets: INT_LIMIT_REACHED',
       }),
     }
   ],

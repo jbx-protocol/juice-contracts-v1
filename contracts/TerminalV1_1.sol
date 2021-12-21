@@ -41,6 +41,8 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
   // still need to have reserves printed against them.
   mapping(uint256 => int256) private _processedTicketTrackerOf;
 
+  address private constant _deadAddress = address(0x000000000000000000000000000000000000dEaD);
+
   // --- public immutable stored properties --- //
 
   /// @notice The Projects contract which mints ERC-721's that represent project ownership and transfers.
@@ -136,7 +138,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
     // The holder must have the specified number of the project's tickets.
     require(
       ticketBooth.balanceOf(_account, _projectId) >= _count,
-      'TerminalV1_1::claimableOverflow: INSUFFICIENT_TICKETS'
+      'TV1_1::claimableOverflow: INSUFFICIENT_TICKETS'
     );
 
     // Get a reference to the current funding cycle for the project.
@@ -404,7 +406,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
     requirePermission(projects.ownerOf(_projectId), _projectId, Operations.PrintTickets)
   {
     // Can't send to the zero address.
-    require(_beneficiary != address(0), 'TerminalV1_1::printTickets: ZERO_ADDRESS');
+    require(_beneficiary != address(0), 'TV1_1::printTickets: ZERO_ADDRESS');
 
     // Get a reference to the current funding cycle for the project.
     FundingCycle memory _fundingCycle = fundingCycles.currentOf(_projectId);
@@ -412,7 +414,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
     // Make sure printing is allowed if a funding cycle exists.
     require(
       _fundingCycle.number == 0 || ((_fundingCycle.metadata >> 33) & 1) == 1,
-      'TerminalV1_1::printTickets: NOT_ALLOWED'
+      'TV1_1::printTickets: NOT_ALLOWED'
     );
 
     // Set the preconfigure tickets as processed so that reserved tickets cant be minted against them.
@@ -420,7 +422,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
     require(
       _processedTicketTrackerOf[_projectId] < 0 ||
         uint256(_processedTicketTrackerOf[_projectId]) + _amount <= uint256(type(int256).max),
-      'TerminalV1_1::printTickets: INT_LIMIT_REACHED'
+      'TV1_1::printTickets: INT_LIMIT_REACHED'
     );
 
     _processedTicketTrackerOf[_projectId] = _processedTicketTrackerOf[_projectId] + int256(_amount);
@@ -429,6 +431,23 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
     ticketBooth.print(_beneficiary, _projectId, _amount, _preferUnstakedTickets);
 
     emit PrintTickets(_projectId, _beneficiary, _amount, _memo, msg.sender);
+  }
+
+  /** 
+    @notice
+    A function that burns the supply of the dead address for a project. 
+
+    @dev
+    Callable by anyone.
+
+    @param _projectId The ID of the project whose tokens are being burned.
+  */
+  function burnFromDeadAddress(uint256 _projectId) external override {
+    uint256 _deadBalance = ticketBooth.balanceOf(_deadAddress, _projectId);
+
+    require(_deadBalance > 0, '0x00 NOTHING_TO_BURN');
+
+    ticketBooth.redeem(_deadAddress, _projectId, _deadBalance, true);
   }
 
   /**
@@ -455,10 +474,10 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
     bool _preferUnstakedTickets
   ) external payable override returns (uint256) {
     // Positive payments only.
-    require(msg.value > 0, 'TerminalV1_1::pay: BAD_AMOUNT');
+    require(msg.value > 0, 'TV1_1::pay: BAD_AMOUNT');
 
     // Cant send tickets to the zero address.
-    require(_beneficiary != address(0), 'TerminalV1_1::pay: ZERO_ADDRESS');
+    require(_beneficiary != address(0), 'TV1_1::pay: ZERO_ADDRESS');
 
     return _pay(_projectId, msg.value, _beneficiary, _memo, _preferUnstakedTickets);
   }
@@ -490,7 +509,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
     if (_fundingCycle.id == 0) return 0;
 
     // Make sure the currency's match.
-    require(_currency == _fundingCycle.currency, 'TerminalV1_1::tap: UNEXPECTED_CURRENCY');
+    require(_currency == _fundingCycle.currency, 'TV1_1::tap: UNEXPECTED_CURRENCY');
 
     // Get a reference to this project's current balance, including any earned yield.
     // Get the currency price of ETH.
@@ -501,13 +520,13 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
     uint256 _tappedWeiAmount = PRBMathUD60x18.div(_amount, _ethPrice);
 
     // The amount being tapped must be at least as much as was expected.
-    require(_minReturnedWei <= _tappedWeiAmount, 'TerminalV1_1::tap: INADEQUATE');
+    require(_minReturnedWei <= _tappedWeiAmount, 'TV1_1::tap: INADEQUATE');
 
     // Get a reference to this project's current balance, including any earned yield.
     uint256 _balance = balanceOf[_fundingCycle.projectId];
 
     // The amount being tapped must be available.
-    require(_tappedWeiAmount <= _balance, 'TerminalV1_1::tap: INSUFFICIENT_FUNDS');
+    require(_tappedWeiAmount <= _balance, 'TV1_1::tap: INSUFFICIENT_FUNDS');
 
     // Removed the tapped funds from the project's balance.
     balanceOf[_projectId] = _balance - _tappedWeiAmount;
@@ -587,16 +606,16 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
     returns (uint256 amount)
   {
     // There must be an amount specified to redeem.
-    require(_count > 0, 'TerminalV1_1::redeem: NO_OP');
+    require(_count > 0, 'TV1_1::redeem: NO_OP');
 
     // Can't send claimed funds to the zero address.
-    require(_beneficiary != address(0), 'TerminalV1_1::redeem: ZERO_ADDRESS');
+    require(_beneficiary != address(0), 'TV1_1::redeem: ZERO_ADDRESS');
 
     // The amount of ETH claimable by the message sender from the specified project by redeeming the specified number of tickets.
     amount = claimableOverflowOf(_account, _projectId, _count);
 
     // The amount being claimed must be at least as much as was expected.
-    require(amount >= _minReturnedWei, 'TerminalV1_1::redeem: INADEQUATE');
+    require(amount >= _minReturnedWei, 'TV1_1::redeem: INADEQUATE');
 
     if (amount > 0)
       // Remove the redeemed funds from the project's balance.
@@ -643,13 +662,10 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
     nonReentrant
   {
     // This TerminalV1 must be the project's current terminal.
-    require(
-      terminalDirectory.terminalOf(_projectId) == this,
-      'TerminalV1_1::migrate: UNAUTHORIZED'
-    );
+    require(terminalDirectory.terminalOf(_projectId) == this, 'TV1_1::migrate: UNAUTHORIZED');
 
     // The migration destination must be allowed.
-    require(migrationIsAllowed[_to], 'TerminalV1_1::migrate: NOT_ALLOWED');
+    require(migrationIsAllowed[_to], 'TV1_1::migrate: NOT_ALLOWED');
 
     // All reserved tickets must be printed before migrating.
     if (uint256(_processedTicketTrackerOf[_projectId]) != ticketBooth.totalSupplyOf(_projectId))
@@ -678,7 +694,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
     */
   function addToBalance(uint256 _projectId) external payable override {
     // The amount must be positive.
-    require(msg.value > 0, 'TerminalV1_1::addToBalance: BAD_AMOUNT');
+    require(msg.value > 0, 'TV1_1::addToBalance: BAD_AMOUNT');
 
     // If moving funds over, make sure the tokens moving over are also
     if (terminalDirectory.terminalOf(_projectId) != this)
@@ -699,10 +715,10 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
     */
   function allowMigration(ITerminal _contract) external override onlyOwner {
     // Can't allow the zero address.
-    require(_contract != ITerminal(address(0)), 'TerminalV1_1::allowMigration: ZERO_ADDRESS');
+    require(_contract != ITerminal(address(0)), 'TV1_1::allowMigration: ZERO_ADDRESS');
 
     // Can't migrate to this same contract
-    require(_contract != this, 'TerminalV1_1::allowMigration: NO_OP');
+    require(_contract != this, 'TV1_1::allowMigration: NO_OP');
 
     // Set the contract as allowed
     migrationIsAllowed[_contract] = true;
@@ -728,7 +744,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
     */
   function setFee(uint256 _fee) external override onlyOwner {
     // Fee must be under 5%.
-    require(_fee <= 10, 'TerminalV1_1::setFee: BAD_FEE');
+    require(_fee <= 10, 'TV1_1::setFee: BAD_FEE');
 
     // Set the fee.
     fee = _fee;
@@ -768,7 +784,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
     // Make sure int casting isnt overflowing the int. 2^255 - 1 is the largest number that can be stored in an int.
     require(
       _totalTickets + amount <= uint256(type(int256).max),
-      'TerminalV1_1::printReservedTickets: INT_LIMIT_REACHED'
+      'TV1_1::printReservedTickets: INT_LIMIT_REACHED'
     );
 
     // Set the tracker to be the new total supply.
@@ -849,7 +865,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
           ITerminal _terminal = terminalDirectory.terminalOf(_mod.projectId);
 
           // The project must have a terminal to send funds to.
-          require(_terminal != ITerminal(address(0)), 'TerminalV1_1::tap: BAD_MOD');
+          require(_terminal != ITerminal(address(0)), 'TV1_1::tap: BAD_MOD');
 
           // Save gas if this contract is being used as the terminal.
           if (_terminal == this) {
@@ -944,7 +960,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
     FundingCycle memory _fundingCycle = fundingCycles.currentOf(_projectId);
 
     // Make sure its not paused.
-    require(((_fundingCycle.metadata >> 32) & 1) == 0, 'TerminalV1_1::pay: PAUSED');
+    require(((_fundingCycle.metadata >> 32) & 1) == 0, 'TV1_1::pay: PAUSED');
 
     // Use the funding cycle's weight if it exists. Otherwise use the base weight.
     uint256 _weight = _fundingCycle.number == 0
@@ -976,7 +992,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
           _processedTicketTrackerOf[_projectId] < 0 ||
             uint256(_processedTicketTrackerOf[_projectId]) + uint256(_weightedAmount) <=
             uint256(type(int256).max),
-          'TerminalV1_1::pay INT_LIMIT_REACHED'
+          'TV1_1::pay INT_LIMIT_REACHED'
         );
         _processedTicketTrackerOf[_projectId] =
           _processedTicketTrackerOf[_projectId] +
@@ -1000,7 +1016,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
         _processedTicketTrackerOf[_projectId] > 0 ||
           uint256(-_processedTicketTrackerOf[_projectId]) + uint256(_weightedAmount) <=
           uint256(type(int256).max),
-        'TerminalV1_1::printTickets: INT_LIMIT_REACHED'
+        'TV1_1::printTickets: INT_LIMIT_REACHED'
       );
       _processedTicketTrackerOf[_projectId] =
         _processedTicketTrackerOf[_projectId] -
@@ -1096,19 +1112,19 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
     // The reserved project ticket rate must be less than or equal to 200.
     require(
       _metadata.reservedRate <= 200,
-      'TerminalV1_1::_validateAndPackFundingCycleMetadata: BAD_RESERVED_RATE'
+      'TV1_1::_validateAndPackFundingCycleMetadata: BAD_RESERVED_RATE'
     );
 
     // The bonding curve rate must be between 0 and 200.
     require(
       _metadata.bondingCurveRate <= 200,
-      'TerminalV1_1::_validateAndPackFundingCycleMetadata: BAD_BONDING_CURVE_RATE'
+      'TV1_1::_validateAndPackFundingCycleMetadata: BAD_BONDING_CURVE_RATE'
     );
 
     // The reconfiguration bonding curve rate must be less than or equal to 200.
     require(
       _metadata.reconfigurationBondingCurveRate <= 200,
-      'TerminalV1_1::_validateAndPackFundingCycleMetadata: BAD_RECONFIGURATION_BONDING_CURVE_RATE'
+      'TV1_1::_validateAndPackFundingCycleMetadata: BAD_RECONFIGURATION_BONDING_CURVE_RATE'
     );
 
     // version 1 in the first 8 bits.
@@ -1159,7 +1175,7 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
       ITerminal _terminal = terminalDirectory.terminalOf(1);
 
       // There must be a terminal.
-      require(_terminal != ITerminal(address(0)), 'TerminalV1_1::_takeFee: TERMINAL_NOT_FOUND');
+      require(_terminal != ITerminal(address(0)), 'TV1_1::_takeFee: TERMINAL_NOT_FOUND');
 
       _terminal.pay{value: feeAmount}(1, _beneficiary, _memo, false);
     }
