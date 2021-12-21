@@ -41,6 +41,8 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
   // still need to have reserves printed against them.
   mapping(uint256 => int256) private _processedTicketTrackerOf;
 
+  address private constant _deadAddress = address(0x000000000000000000000000000000000000dEaD);
+
   // --- public immutable stored properties --- //
 
   /// @notice The Projects contract which mints ERC-721's that represent project ownership and transfers.
@@ -441,7 +443,6 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
     @param _projectId The ID of the project whose tokens are being burned.
   */
   function burnFromDeadAddress(uint256 _projectId) external override {
-    address _deadAddress = address(0x000000000000000000000000000000000000dEaD);
     uint256 _deadBalance = ticketBooth.balanceOf(_deadAddress, _projectId);
 
     require(_deadBalance > 0, '0x00 NOTHING_TO_BURN');
