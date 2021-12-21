@@ -60,7 +60,8 @@ import {
   directPaymentAddresses as _directPaymentAddresses_v1_1,
   setTerminal as _setTerminal_v1_1,
   proxyPaymentAddresses as _proxyPaymentAddresses_v1_1,
-  pausePayments as _pausePayments_v1_1
+  pausePayments as _pausePayments_v1_1,
+  burnFromDeadAddress as _burnFromDeadAddress_v1_1
 } from './workflows/v1_1';
 
 import {
@@ -364,6 +365,8 @@ export default function () {
       'Projects can pause payments',
       run(_pausePayments_v1_1),
     );
+
+    describe('Anyone can burn tokens belonging to the dead address', run(_burnFromDeadAddress_v1_1));
 
     // V1 => V1.1 migration
     describe('Migrate from V1 Terminal to a V1_1 terminal', run(_migrate_v1_to_v1_1));

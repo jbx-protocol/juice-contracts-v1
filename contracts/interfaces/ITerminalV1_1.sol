@@ -178,5 +178,5 @@ interface ITerminalV1_1 {
 
   function setFee(uint256 _fee) external;
 
-  function burnFromZeroAddress(uint256 _projectId) external;
+  function burnFromDeadAddress(uint256 _projectId) external;
 }

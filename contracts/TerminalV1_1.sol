@@ -433,15 +433,20 @@ contract TerminalV1_1 is Operatable, ITerminalV1_1, ITerminal, ReentrancyGuard, 
 
   /** 
     @notice
-    A function that burns the supply of the zero address for a project. 
+    A function that burns the supply of the dead address for a project. 
 
     @dev
     Callable by anyone.
 
     @param _projectId The ID of the project whose tokens are being burned.
   */
-  function burnFromZeroAddress(uint256 _projectId) external override {
-    ticketBooth.redeem(address(0), _projectId, ticketBooth.balanceOf(address(0), _projectId), true);
+  function burnFromDeadAddress(uint256 _projectId) external override {
+    address _deadAddress = address(0x000000000000000000000000000000000000dEaD);
+    uint256 _deadBalance = ticketBooth.balanceOf(_deadAddress, _projectId);
+
+    require(_deadBalance > 0, '0x00 NOTHING_TO_BURN');
+
+    ticketBooth.redeem(_deadAddress, _projectId, _deadBalance, true);
   }
 
   /**
