@@ -7,7 +7,7 @@ import '@openzeppelin/contracts/utils/Address.sol';
 import '@paulrberg/contracts/math/PRBMath.sol';
 import '@paulrberg/contracts/math/PRBMathUD60x18.sol';
 
-import './interfaces/ITerminalV1_rescue.sol';
+import './interfaces/ITerminalV1Rescue.sol';
 import './abstract/JuiceboxProject.sol';
 import './abstract/Operatable.sol';
 
