@@ -137,7 +137,7 @@ contract TerminalV1Rescue is Operatable, ITerminalV1Rescue, ITerminal, Reentranc
     // Get a reference to the current funding cycle for the project.
     FundingCycle memory _fundingCycle = fundingCycles.get(fundingCycles.latestIdOf(_projectId));
 
-    // Only one-time terminals are rescuable.
+    // Only one-time funding cycles are rescuable.
     require(_fundingCycle.discountRate == 201, 'cant rescue');
 
     // Send funds to beneficiary.
