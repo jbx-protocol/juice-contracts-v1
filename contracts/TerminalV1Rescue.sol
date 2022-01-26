@@ -173,62 +173,19 @@ contract TerminalV1Rescue is Operatable, ITerminalV1Rescue, ITerminal, Reentranc
   }
 
   /**
-      @notice 
-      Allows a project owner to migrate its funds and operations to a new contract.
-
-      @dev
-      Only a project's owner or a designated operator can migrate it.
-
-      @param _projectId The ID of the project being migrated.
-      @param _to The contract that will gain the project's funds.
-    */
-  function migrate(uint256 _projectId, ITerminal _to)
-    external
-    override
-    requirePermission(projects.ownerOf(_projectId), _projectId, Operations.Migrate)
-    nonReentrant
-  {
-    // This TerminalV1 must be the project's current terminal.
-    require(terminalDirectory.terminalOf(_projectId) == this, 'unauthorized');
-
-    // The migration destination must be allowed.
-    require(migrationIsAllowed[_to], 'not allowed');
-
-    // Get a reference to this project's current balance, included any earned yield.
-    uint256 _balanceOf = balanceOf[_projectId];
-
-    // Set the balance to 0.
-    balanceOf[_projectId] = 0;
-
-    // Move the funds to the new contract if needed.
-    if (_balanceOf > 0) _to.addToBalance{value: _balanceOf}(_projectId);
-
-    // Switch the direct payment terminal.
-    terminalDirectory.setTerminal(_projectId, _to);
-
-    emit Migrate(_projectId, _to, _balanceOf, msg.sender);
+    @notice 
+    NO-OP
+  */
+  function migrate(uint256, ITerminal) external pure override {
+    require(false, 'cant migrate');
   }
 
   /**
     @notice 
-    Adds to the contract addresses that projects can migrate their Tickets to.
-
-    @dev
-    Only governance can add a contract to the migration allow list.
-
-    @param _contract The contract to allow.
+    NO-OP
   */
-  function allowMigration(ITerminal _contract) external override onlyOwner {
-    // Can't allow the zero address.
-    require(_contract != ITerminal(address(0)), 'zero address');
-
-    // Can't migrate to this same contract
-    require(_contract != this, 'no op');
-
-    // Set the contract as allowed
-    migrationIsAllowed[_contract] = true;
-
-    emit AllowMigration(_contract);
+  function allowMigration(ITerminal) external pure override {
+    require(false, 'cant allow migration');
   }
 
   /**
