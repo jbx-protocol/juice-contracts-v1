@@ -39,10 +39,6 @@ interface ITerminalV1Rescue {
     address caller
   );
 
-  event AllowMigration(ITerminal allowed);
-
-  event Migrate(uint256 indexed projectId, ITerminal indexed to, uint256 _amount, address caller);
-
   event ToggleRescue(uint256 projectId, bool newValue, address caller);
 
   function projects() external view returns (IProjects);
