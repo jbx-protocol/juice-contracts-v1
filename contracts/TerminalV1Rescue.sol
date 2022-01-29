@@ -118,7 +118,7 @@ contract TerminalV1Rescue is Operatable, ITerminalV1Rescue, ITerminal, Reentranc
     uint256 _projectId,
     address payable _beneficiary,
     uint256 _amount
-  ) external override {
+  ) external override nonReentrant {
     // Must be project owner.
     require(msg.sender == projects.ownerOf(_projectId), 'not owner');
 
@@ -140,10 +140,10 @@ contract TerminalV1Rescue is Operatable, ITerminalV1Rescue, ITerminal, Reentranc
     // Only one-time funding cycles are rescuable.
     require(_fundingCycle.discountRate == 201, 'cant rescue');
 
-    // Send funds to beneficiary.
-    if (_originalBalance > 0) Address.sendValue(_beneficiary, _amount);
-
     balanceOf[_projectId] = balanceOf[_projectId] - _amount;
+
+    // Send funds to beneficiary.
+    if (_amount > 0) Address.sendValue(_beneficiary, _amount);
 
     emit Rescued(_projectId, _beneficiary, _originalBalance, _amount, msg.sender);
   }
