@@ -108,7 +108,7 @@ contract TerminalV1Rescue is Operatable, ITerminalV1Rescue, ITerminal, Reentranc
     A function that burns the supply of the dead address for a project. 
 
     @dev
-    Callable by anyone.
+    Callable only by project owner, if rescue is allowed by the projectId, if the project's current funding cycle is non recurring.
 
     @param _projectId The ID of the project whose ETH is being resued.
     @param _beneficiary The recipient of the resucued funds.
